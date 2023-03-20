@@ -106,15 +106,77 @@ function DataAnalysis() {
             .catch((err) => {
                 console.log('Error fetching getHeartbeatTotalCount: ', err)
             })
-
     };
-
     const getRegisterTotalCount = async () => {
 
         const tokensQuery = `
-    query MyQuery($first: Int,$skip: Int) {
-  registereds(first: $first,skip: $skip) {
+  query MyQuery {
+  heartbeatSummaries {
+    totalCount
+  }
+}
+`
+        // todo 1  query heartbeatSummaries
+        //todo 2 data.heartbeatSummaries
+        ApoClient.query({
+            query: gql(tokensQuery),
+        })
+            .then((data) =>  {
+                setRegisterTotalCount(data?.data?.heartbeatSummaries?.[0]?.totalCount ?? 0)
+                setRegisterTotalCountLoading(false)
+            })
+            .catch((err) => {
+                console.log('Error fetching getRegisteredTotalCount: ', err)
+            })
+    };
+    const getTodayHeartbeat = async () => {
+        const d1 = new Date();
+        const date1 = d1.getUTCFullYear() +'-'+d1.getUTCMonth()+'-'+d1.getUTCDate()
+        const d2 = new Date(getDay(1))
+        const date2 = d2.getUTCFullYear() +'-'+d2.getUTCMonth()+'-'+d2.getUTCDate()
+
+//    where: {id_gte: "2023-2-25-0", id_lt: "2023-2-26-0"}
+        setTodayHeartbeatLoading(true);
+        const tokensQuery = `
+    query MyQuery($id_gte: String,$id_lt: String) {
+     heartbeateHourlySummaries(first:1000,where: {id_gte: $id_gte, id_lt: $id_lt}
+  ) {
     id
+    count
+  }
+}
+`
+        ApoClient.query({
+            query: gql(tokensQuery),
+            variables: {
+                id_gte: date1,
+                id_lt: date2,
+            },
+        })
+            .then((rr) =>  {
+                item1.count = rr?.data?.heartbeateHourlySummaries?.[0]?.count ?? 0;
+                setTodayHeartbeat(item1)
+                setTodayHeartbeatLoading(false)
+                return rr.data;
+            })
+            .catch((err) => {
+                console.log('Error fetching getRegisterTotalCount: ', err)
+            })
+
+    };
+    const getTodayRegister = async () => {
+        setTodayRegisterLoading(true);
+        const d1 = new Date();
+        const date1 = d1.getUTCFullYear() +'-'+d1.getUTCMonth()+'-'+d1.getUTCDate()
+        const d2 = new Date(getDay(1))
+        const date2 = d2.getUTCFullYear() +'-'+d2.getUTCMonth()+'-'+d2.getUTCDate()
+
+        const tokensQuery = `
+    query MyQuery($id_gte: String,$id_lt: String) {
+     heartbeateHourlySummaries(first:1000,where: {id_gte: $id_gte, id_lt: $id_lt}
+  ) {
+    id
+    count
   }
 }
 `
@@ -122,89 +184,21 @@ function DataAnalysis() {
         ApoClient.query({
             query: gql(tokensQuery),
             variables: {
-                first: 1000,
-                skip: 0,
+                id_gte: date1,
+                id_lt: date2,
             },
         })
-            .then((data) =>  {
-                let totalCount = 0;
-                totalCount = totalCount + data?.data?.registereds?.length;
-                ApoClient.query({
-                    query: gql(tokensQuery),
-                    variables: {
-                        first: 1000,
-                        skip: 1000,
-                    },
-                })
-                    .then((data) =>  {
-                        totalCount = totalCount + data?.data?.registereds?.length;
-                        setRegisterTotalCount(totalCount)
-                        setRegisterTotalCountLoading(false)
-                    })
-                    .catch((err) => {
-                        console.log('Error fetching getRegisterTotalCount2: ', err)
-                    })
+            .then((rr) =>  {
+                item2.count = rr?.data?.heartbeateHourlySummaries?.[0]?.count ?? 0;
+                setTodayRegister(item2)
+                setTodayRegisterLoading(false)
+                return rr.data;
             })
             .catch((err) => {
                 console.log('Error fetching getRegisterTotalCount: ', err)
             })
+
     };
-
-    const getTodayHeartbeat = async () => {
-        setTodayHeartbeatLoading(true);
-        const tokensQuery = `
-    query MyQuery($first: Int,$skip: Int,$blockTimestamp_gte: BigInt,$blockTimestamp_lt: BigInt, $orderBy: BigInt, $orderDirection: String) {
-     heartbeateds(first: $first,skip: $skip, orderBy: $orderBy,orderDirection: $orderDirection,where: {blockTimestamp_gte: $blockTimestamp_gte, blockTimestamp_lt: $blockTimestamp_lt}
-  ) {
-    id
-    blockTimestamp
-  }
-}
-`
-
-        const skip = 0;
-        const first = 1000;
-        let queryCount = 0;
-        let totalCount = 0;
-        let startTime = UTC0Time;
-
-
-        do {
-            const res = await ApoClient.query({
-                query: gql(tokensQuery),
-                variables: {
-                    first: first,
-                    skip: skip,
-                    blockTimestamp_gte: startTime,
-                    blockTimestamp_lt: nowTime,
-                    orderBy: 'blockTimestamp',
-                    orderDirection: 'asc',
-                },
-            })
-                .then((rr) =>  {
-                    return rr.data;
-                })
-                .catch((err) => {
-                    console.log('Error fetching getRegisterTotalCount: ', err)
-                })
-            queryCount = res?.heartbeateds?.length;
-            totalCount = totalCount + queryCount - 1;
-            if(queryCount > 0){
-                startTime = res?.heartbeateds?.[queryCount-1]?.blockTimestamp;
-            }
-        } while (queryCount === 1000);
-        item1.count = totalCount + 1;
-        setTodayHeartbeat(item1)
-        setTodayHeartbeatLoading(false)
-    };
-
-    const getTodayRegister = async () => {
-        setTodayRegisterLoading(true);
-        item2.count = 0;
-        setTodayRegister(item2)
-        setTodayRegisterLoading(false)
-    };
-
 
     useEffect(() => {
 
