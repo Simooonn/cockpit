@@ -260,6 +260,18 @@ export function getDay(day){
   return tYear+"-"+tMonth+"-"+tDate;
 }
 
+export function getUTCDay(day){
+  const today = new Date();
+  const targetday_milliseconds=today.getTime() + 1000*60*60*24*day;
+  today.setTime(targetday_milliseconds); //注意，这行是关键代码
+  const tYear = today.getFullYear();
+  let tMonth = today.getMonth();
+  let tDate = today.getDate();
+  tMonth = doHandleMonth(tMonth + 1);
+  tDate = doHandleMonth(tDate);
+  return tYear+"-"+tMonth+"-"+tDate;
+}
+
 export function doHandleMonth(month){
 
   let m = month;

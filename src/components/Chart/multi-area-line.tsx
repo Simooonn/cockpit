@@ -4,13 +4,14 @@ import { Spin } from '@arco-design/web-react';
 import CustomTooltip from './customer-tooltip';
 
 const areaColorMap = [
-  'l (90) 0:rgba(131, 100, 255, 0.5) 1:rgba(80, 52, 255, 0.001)',
-  'l (90) 0:rgba(100, 255, 236, 0.5) 1:rgba(52, 255, 243, 0.001)',
   'l (90) 0:rgba(255, 211, 100, 0.5) 1:rgba(255, 235, 52, 0.001)',
+  'l (90) 0:rgba(100, 255, 236, 0.5) 1:rgba(52, 255, 243, 0.001)',
+
+  'l (90) 0:rgba(131, 100, 255, 0.5) 1:rgba(80, 52, 255, 0.001)',
   'l (90) 0:rgba(100, 162, 255, 0.5) 1:rgba(52, 105, 255, 0.001)',
 ];
 
-const lineColorMap = ['#722ED1', '#33D1C9', '#F77234', '#165DFF'];
+const lineColorMap = ['#F77234', '#33D1C9','#722ED1',  '#165DFF'];
 
 function MultiAreaLine({ data, loading }: { data: any[]; loading: boolean }) {
   return (
@@ -18,7 +19,7 @@ function MultiAreaLine({ data, loading }: { data: any[]; loading: boolean }) {
       <Chart
         height={500}
         data={data}
-        padding={[10, 0, 30, 30]}
+        padding={[10, 30, 80, 80]}
         autoFit
         scale={{ time: 'time' }}
         className={'chart-wrapper'}
@@ -51,10 +52,15 @@ function MultiAreaLine({ data, loading }: { data: any[]; loading: boolean }) {
           }}
         </Tooltip>
         <Axis
+            grid={null}
           name="count"
-          label={{ formatter: (value) => `${Number(value) / 100} k` }}
+          label={{ formatter: (value) => {
+                  // return `${Number(value) / 100} k` }}
+              return `${Number(value) / 1000} k` }}
+        }
         />
-        <Legend visible={false} />
+        {/*<Axis name="y" label={null}/>*/}
+        {/*<Legend visible={false} />*/}
       </Chart>
     </Spin>
   );

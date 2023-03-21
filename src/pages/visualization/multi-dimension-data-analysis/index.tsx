@@ -13,7 +13,7 @@ import {IconCaretUp} from "@arco-design/web-react/icon";
 import PublicOpinionCard from "@/pages/visualization/multi-dimension-data-analysis/element/card";
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import {getDay} from "@/utils/function";
-const ApoApiURL = 'https://api.thegraph.com/subgraphs/name/lingcoder/heartbeat'
+const ApoApiURL = 'https://api.thegraph.com/subgraphs/name/txq-bug/subgraph-example'
 const ApoClient = new ApolloClient({
     uri: ApoApiURL,
     cache: new InMemoryCache(),
@@ -104,43 +104,36 @@ function DataAnalysis() {
                 setHeartbeatTotalCountLoading(false)
             })
             .catch((err) => {
-                console.log('Error fetching getHeartbeatTotalCount: ', err)
+                console.log('Error fetching heartbeatSummaries: ', err)
             })
     };
     const getRegisterTotalCount = async () => {
 
         const tokensQuery = `
   query MyQuery {
-  heartbeatSummaries {
+  registeredSummaries {
     totalCount
   }
 }
 `
-        // todo 1  query heartbeatSummaries
-        //todo 2 data.heartbeatSummaries
         ApoClient.query({
             query: gql(tokensQuery),
         })
             .then((data) =>  {
-                setRegisterTotalCount(data?.data?.heartbeatSummaries?.[0]?.totalCount ?? 0)
+                setRegisterTotalCount(data?.data?.registeredSummaries?.[0]?.totalCount ?? 0)
                 setRegisterTotalCountLoading(false)
             })
             .catch((err) => {
-                console.log('Error fetching getRegisteredTotalCount: ', err)
+                console.log('Error fetching registeredSummaries: ', err)
             })
     };
-    const getTodayHeartbeat = async () => {
-        const d1 = new Date();
-        const date1 = d1.getUTCFullYear() +'-'+d1.getUTCMonth()+'-'+d1.getUTCDate()
-        const d2 = new Date(getDay(1))
-        const date2 = d2.getUTCFullYear() +'-'+d2.getUTCMonth()+'-'+d2.getUTCDate()
 
-//    where: {id_gte: "2023-2-25-0", id_lt: "2023-2-26-0"}
+    const getTodayHeartbeat = async () => {
+        const date1 = getDay(0)
         setTodayHeartbeatLoading(true);
         const tokensQuery = `
-    query MyQuery($id_gte: String,$id_lt: String) {
-     heartbeateHourlySummaries(first:1000,where: {id_gte: $id_gte, id_lt: $id_lt}
-  ) {
+    query MyQuery($id: String) {
+     heartbeatDailySummary(id:$id) {
     id
     count
   }
@@ -149,53 +142,48 @@ function DataAnalysis() {
         ApoClient.query({
             query: gql(tokensQuery),
             variables: {
-                id_gte: date1,
-                id_lt: date2,
+                id: date1,
+                // id: '2023-3-21',
+
             },
         })
             .then((rr) =>  {
-                item1.count = rr?.data?.heartbeateHourlySummaries?.[0]?.count ?? 0;
+                item1.count = rr?.data?.heartbeatDailySummary?.count ?? 0;
                 setTodayHeartbeat(item1)
                 setTodayHeartbeatLoading(false)
                 return rr.data;
             })
             .catch((err) => {
-                console.log('Error fetching getRegisterTotalCount: ', err)
+                console.log('Error fetching heartbeatDailySummary: ', err)
             })
 
     };
     const getTodayRegister = async () => {
         setTodayRegisterLoading(true);
-        const d1 = new Date();
-        const date1 = d1.getUTCFullYear() +'-'+d1.getUTCMonth()+'-'+d1.getUTCDate()
-        const d2 = new Date(getDay(1))
-        const date2 = d2.getUTCFullYear() +'-'+d2.getUTCMonth()+'-'+d2.getUTCDate()
-
+        const date1 = getDay(0)
         const tokensQuery = `
-    query MyQuery($id_gte: String,$id_lt: String) {
-     heartbeateHourlySummaries(first:1000,where: {id_gte: $id_gte, id_lt: $id_lt}
-  ) {
-    id
+  query MyQuery($id: String) {
+  registeredDailySummary(id:$id) {
     count
   }
 }
 `
-
         ApoClient.query({
             query: gql(tokensQuery),
             variables: {
-                id_gte: date1,
-                id_lt: date2,
+                id: date1,
+                // id: '2023-3-21',
+
             },
         })
             .then((rr) =>  {
-                item2.count = rr?.data?.heartbeateHourlySummaries?.[0]?.count ?? 0;
+                item2.count = rr?.data?.registeredDailySummary?.count ?? 0;
                 setTodayRegister(item2)
                 setTodayRegisterLoading(false)
                 return rr.data;
             })
             .catch((err) => {
-                console.log('Error fetching getRegisterTotalCount: ', err)
+                console.log('Error fetching registeredDailySummary: ', err)
             })
 
     };
@@ -305,12 +293,7 @@ function DataAnalysis() {
                         <Title heading={6}>
                             Data Overview
                         </Title>
-                        <DataOverview
-                            heartbeatTotalCount={heartbeatTotalCount}
-                            registerTotalCount={registerTotalCount}
-                            todayHeartbeat={todayHeartbeat}
-                            todayRegister={todayRegister}
-                        />
+                        <DataOverview/>
                     </Card>
                 </Col>
             </Row>
