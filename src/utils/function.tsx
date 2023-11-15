@@ -238,9 +238,28 @@ export function copy_text(content: string) {
 
 export function api_url() {
   if (typeof window !== 'undefined') {
-    return window.location.origin + '/api/v1';
+    let wUrl;
+    const port = window.location.port;
+    if (window.location.origin.indexOf('admin.metablox.io') != -1) {
+      if (port == '80' || port == '443' || port == '') {
+        //prod
+        wUrl = 'https://api.metablox.io';
+      } else {
+        //stg
+        wUrl = 'https://apistage.metablox.io';
+      }
+    } else if (window.location.origin.indexOf('54.185.72.94') != -1) {
+      //test - QA
+      wUrl = 'https://apitest.metablox.io';
+    } else if (window.location.origin.indexOf('54.189.68.105') != -1) {
+      //dev
+      wUrl = 'https://apidev.metablox.io/';
+    } else {
+      wUrl = '';
+    }
+    return wUrl + '/v1/admin';
   } else {
-    return '/api/v1';
+    return '/v1/admin';
   }
 }
 
@@ -248,35 +267,34 @@ export function time_to_rfc3339(time) {
   return new Date(time).toISOString();
 }
 
-export function getDay(day){
+export function getDay(day) {
   const today = new Date();
-  const targetday_milliseconds=today.getTime() + 1000*60*60*24*day;
+  const targetday_milliseconds = today.getTime() + 1000 * 60 * 60 * 24 * day;
   today.setTime(targetday_milliseconds); //注意，这行是关键代码
   const tYear = today.getFullYear();
   let tMonth = today.getMonth();
   let tDate = today.getDate();
   tMonth = doHandleMonth(tMonth + 1);
   tDate = doHandleMonth(tDate);
-  return tYear+"-"+tMonth+"-"+tDate;
+  return tYear + '-' + tMonth + '-' + tDate;
 }
 
-export function getUTCDay(day){
+export function getUTCDay(day) {
   const today = new Date();
-  const targetday_milliseconds=today.getTime() + 1000*60*60*24*day;
+  const targetday_milliseconds = today.getTime() + 1000 * 60 * 60 * 24 * day;
   today.setTime(targetday_milliseconds); //注意，这行是关键代码
   const tYear = today.getFullYear();
   let tMonth = today.getMonth();
   let tDate = today.getDate();
   tMonth = doHandleMonth(tMonth + 1);
   tDate = doHandleMonth(tDate);
-  return tYear+"-"+tMonth+"-"+tDate;
+  return tYear + '-' + tMonth + '-' + tDate;
 }
 
-export function doHandleMonth(month){
-
+export function doHandleMonth(month) {
   let m = month;
-  if(month.toString().length == 1){
-    m = "0" + month;
+  if (month.toString().length == 1) {
+    m = '0' + month;
   }
   return m;
 }

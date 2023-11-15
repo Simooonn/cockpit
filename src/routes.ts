@@ -12,32 +12,32 @@ export type IRoute = AuthParams & {
 };
 
 export const routes: IRoute[] = [
+  {
+    name: 'menu.dashboard',
+    key: 'dashboard',
+    // children: [
+    //   {
+    //     name: 'menu.dashboard.workplace',
+    //     key: 'dashboard/workplace',
+    //   },
+    //
+    // ],
+  },
   // {
-  //   name: 'menu.dashboard',
-  //   key: 'dashboard',
+  //   name: 'menu.visualization',
+  //   key: 'visualization',
   //   children: [
+  //     // {
+  //     //   name: 'menu.visualization.dataAnalysis',
+  //     //   key: 'visualization/data-analysis',
+  //     // },
   //     {
-  //       name: 'menu.dashboard.workplace',
-  //       key: 'dashboard/workplace',
+  //       name: 'menu.visualization.multiDimensionDataAnalysis',
+  //       key: 'visualization/multi-dimension-data-analysis',
+  //       // oneOfPerm: true,
   //     },
-  //
   //   ],
   // },
-  {
-    name: 'menu.visualization',
-    key: 'visualization',
-    children: [
-      // {
-      //   name: 'menu.visualization.dataAnalysis',
-      //   key: 'visualization/data-analysis',
-      // },
-      {
-        name: 'menu.visualization.multiDimensionDataAnalysis',
-        key: 'visualization/multi-dimension-data-analysis',
-        // oneOfPerm: true,
-      },
-    ],
-  },
 ];
 
 export const getName = (path: string, routes) => {
