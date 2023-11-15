@@ -13,7 +13,7 @@ import {IconCaretUp} from "@arco-design/web-react/icon";
 import PublicOpinionCard from "@/pages/visualization/multi-dimension-data-analysis/element/card";
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import {getDay} from "@/utils/function";
-const ApoApiURL = 'https://api.thegraph.com/subgraphs/name/txq-bug/subgraph-example'
+const ApoApiURL = 'https://api.thegraph.com/subgraphs/name/simooonn/metablox-cockpit'
 const ApoClient = new ApolloClient({
     uri: ApoApiURL,
     cache: new InMemoryCache(),

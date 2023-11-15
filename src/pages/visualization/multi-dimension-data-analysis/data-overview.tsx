@@ -19,7 +19,7 @@ import styles from './data-overview.module.less';
 import MultiAreaLine from '@/components/Chart/multi-area-line';
 import {arrListSort, getDay} from "@/utils/function";
 import {ApolloClient, gql, InMemoryCache} from "@apollo/client";
-const ApoApiURL = 'https://api.thegraph.com/subgraphs/name/txq-bug/subgraph-example'
+const ApoApiURL = 'https://api.thegraph.com/subgraphs/name/simooonn/metablox-cockpit'
 const ApoClient = new ApolloClient({
     uri: ApoApiURL,
     cache: new InMemoryCache(),
@@ -33,7 +33,7 @@ export default () => {
     const UTC0Time =  parseInt(((new Date(getDay(0))).getTime()/1000).toString())
     const nowTime =  parseInt(((new Date()).getTime()/1000).toString())
     const date1 = getDay(-30);
-    const date2 = getDay(-1)
+    const date2 = getDay(0)
 
     const getDayHeartbeat = async () => {
 
