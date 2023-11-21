@@ -1,5 +1,5 @@
 import React from 'react';
-import { Space } from '@arco-design/web-react';
+import {  Space } from '@arco-design/web-react';
 import Overview from './element/overview';
 import styles from './index.module.less';
 

@@ -11,6 +11,15 @@ body {
   background-color: var(--color-bg-1);
 }
 
+a,
+a:link,
+a:visited,
+a:hover,
+a:active {
+  text-decoration: none;
+  color: inherit;
+}
+
 .chart-wrapper {
   .bizcharts-tooltip {
     background: linear-gradient(
@@ -41,6 +50,144 @@ body[arco-theme='dark'] {
   }
 }
 
+
+.my-location:hover{
+  //background-position: 126px 0!important;
+  background-image: url("/my-location2.png")!important;
+
+}
+
+.flex_row {
+  flex-direction: row;
+}
+
+.flex_column {
+  flex-direction: column;
+}
+
+.flex-justify-content-between {
+  justify-content: space-between;
+}
+
+.flex-justify-content-center {
+  justify-content: center;
+}
+
+.flex-align-items-center {
+  align-items: center;
+}
+
+.flex-gap5 {
+  gap: 5px;
+}
+
+.flex-gap10 {
+  gap: 10px;
+}
+
+.flex-gap15 {
+  gap: 15px;
+}
+
+.flex-gap20 {
+  gap: 20px;
+}
+
+.flex-gap25 {
+  gap: 25px;
+}
+
+.flex-gap30 {
+  gap: 30px;
+}
+
+.flex-gap35 {
+  gap: 35px;
+}
+
+.flex-gap40 {
+  gap: 10px;
+}
+
+.flex-gap45 {
+  gap: 45px;
+}
+
+.flex-gap50 {
+  gap: 50px;
+}
+
+.flex-gap100 {
+  gap: 100px;
+}
+
+.reactEasyCrop_Container {
+  position: absolute;
+  top: 100px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+  cursor: move;
+}
+
+.reactEasyCrop_Image,
+.reactEasyCrop_Video {
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  will-change: transform; /* this improves performances and prevent painting issues on iOS Chrome */
+}
+
+.reactEasyCrop_CropArea {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 255, 255, 50%);
+  box-sizing: border-box;
+  box-shadow: 0 0 0 9999em;
+  color: rgba(0, 0, 0, 50%);
+  overflow: hidden;
+}
+
+.reactEasyCrop_CropAreaRound {
+  border-radius: 50%;
+}
+
+.reactEasyCrop_CropAreaGrid::before {
+  content: ' ';
+  box-sizing: border-box;
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 50%);
+  top: 0;
+  bottom: 0;
+  left: 33.33%;
+  right: 33.33%;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.reactEasyCrop_CropAreaGrid::after {
+  content: ' ';
+  box-sizing: border-box;
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 50%);
+  top: 33.33%;
+  bottom: 33.33%;
+  left: 0;
+  right: 0;
+  border-left: 0;
+  border-right: 0;
+}
+
 .flex {
   display: flex;
 }
@@ -68,3 +215,63 @@ body[arco-theme='dark'] {
 .items-center {
   align-items: center;
 }
+@line-card-dark-bg: linear-gradient(180deg, #d17d00 0%, #d25f00 100%);
+
+
+
+
+
+
+
+
+/* miner map start */
+.advanced-marker-tag{
+  background-image:url("/wifi-location.png");
+  background-size:  24px 35px ;
+  background-repeat: no-repeat;
+  width: 24px;
+  height: 35px;
+}
+.advanced-marker-tag-img{
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  margin-top: 2px;
+  margin-left: 2px;
+}
+
+
+.custom-map-control-button{
+  width: 51px;
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  background: #ffffff00;
+  border: 0;
+  padding: 0;
+}
+.custom-map-control-button1{
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: #ffffff ;
+  box-shadow: 0 1px 2px rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 8px;
+  transition:background-color .16s ease-out;
+}
+.my-location{
+  background-image: url("/my-location1.png");
+  background-size: 25px 25px;
+  background-repeat: no-repeat;
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  background-position: center center;
+}
+/* miner map  end */

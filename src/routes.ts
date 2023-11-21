@@ -13,31 +13,13 @@ export type IRoute = AuthParams & {
 
 export const routes: IRoute[] = [
   {
-    name: 'menu.dashboard',
+    name: 'label.dashboard',
     key: 'dashboard',
-    // children: [
-    //   {
-    //     name: 'menu.dashboard.workplace',
-    //     key: 'dashboard/workplace',
-    //   },
-    //
-    // ],
   },
-  // {
-  //   name: 'menu.visualization',
-  //   key: 'visualization',
-  //   children: [
-  //     // {
-  //     //   name: 'menu.visualization.dataAnalysis',
-  //     //   key: 'visualization/data-analysis',
-  //     // },
-  //     {
-  //       name: 'menu.visualization.multiDimensionDataAnalysis',
-  //       key: 'visualization/multi-dimension-data-analysis',
-  //       // oneOfPerm: true,
-  //     },
-  //   ],
-  // },
+  {
+    name: 'label.minerMap',
+    key: 'minerMap',
+  },
 ];
 
 export const getName = (path: string, routes) => {

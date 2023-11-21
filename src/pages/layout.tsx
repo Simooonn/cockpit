@@ -7,6 +7,14 @@ import {
   IconMenuFold,
   IconMenuUnfold,
   IconApps,
+  IconUser,
+  IconFire,
+  IconSettings,
+  IconHome,
+  IconUserGroup,
+  IconCompass,
+  IconDesktop,
+  IconTool, IconBook, IconPublic,
 } from '@arco-design/web-react/icon';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -35,6 +43,28 @@ function getIconFromKey(key) {
       return <IconTag className={styles.icon} />;
     case 'merchant':
       return <IconApps className={styles.icon} />;
+    case 'miner':
+      return <IconApps className={styles.icon} />;
+    case 'user':
+      return <IconUser className={styles.icon} />;
+    case 'settings':
+      return <IconSettings className={styles.icon} />;
+    case 'activities':
+      return <IconFire className={styles.icon} />;
+    case 'rights':
+      return <IconUserGroup className={styles.icon} />;
+    case 'personalCenter':
+      return <IconHome className={styles.icon} />;
+    case 'visualize':
+      return <IconCompass className={styles.icon} />;
+    case 'systemMonitor':
+      return <IconDesktop className={styles.icon} />;
+    case 'systemTools':
+      return <IconTool className={styles.icon} />;
+    case 'dataStatistics':
+      return <IconBook className={styles.icon} />;
+    case 'minerMap':
+      return <IconPublic className={styles.icon} />;
     default:
       return <div className={styles['icon-empty']} />;
   }
@@ -197,7 +227,12 @@ function PageLayout({ children }: { children: ReactNode }) {
                   selectedKeys={selectedKeys}
                   openKeys={openKeys}
                   onClickSubMenu={(_, openKeys) => {
-                    setOpenKeys(openKeys);
+                    // setOpenKeys(openKeys);
+                    setOpenKeys([
+                      openKeys[
+                        openKeys.length - 1 < 0 ? 0 : openKeys.length - 1
+                      ],
+                    ]);
                   }}
                 >
                   {renderRoutes(locale)(routes, 1)}

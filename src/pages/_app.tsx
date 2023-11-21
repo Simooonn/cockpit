@@ -16,6 +16,7 @@ import checkLogin from '@/utils/checkLogin';
 import changeTheme from '@/utils/changeTheme';
 import useStorage from '@/utils/useStorage';
 import Layout from './layout';
+import '../mock';
 import { getLocalUser } from '@/utils/function';
 
 const store = createStore(rootReducer);
@@ -30,9 +31,10 @@ export default function MyApp({
   Component,
   renderConfig,
 }: AppProps & { renderConfig: RenderConfig } & { Component: any }) {
-  const { arcoLang, arcoTheme } = renderConfig;
+  const { arcoLang } = renderConfig;
   const [lang, setLang] = useStorage('arco-lang', arcoLang || 'en-US');
-  const [theme, setTheme] = useStorage('arco-theme', arcoTheme || 'light');
+  // const [theme, setTheme] = useStorage('arco-theme', arcoTheme || 'light');
+  const [theme, setTheme] = useStorage('arco-theme', 'dark');
   const router = useRouter();
 
   const locale = useMemo(() => {
@@ -63,14 +65,6 @@ export default function MyApp({
     //   });
     // });
   }
-
-  useEffect(() => {
-    if (checkLogin()) {
-      fetchUserInfo();
-    } else if (window.location.pathname.replace(/\//g, '') !== 'login') {
-      // window.location.pathname = '/login';
-    }
-  }, []);
 
   useEffect(() => {
     const handleStart = () => {
@@ -127,6 +121,10 @@ export default function MyApp({
           Table: {
             border: false,
           },
+        }}
+        tablePagination={{
+          hideOnSinglePage: true,
+          showJumper: true,
         }}
       >
         <Provider store={store}>

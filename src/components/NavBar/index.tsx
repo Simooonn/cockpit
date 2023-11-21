@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from 'react';
 import {
-  Tooltip,
   Avatar,
   Select,
   Dropdown,
@@ -10,9 +9,6 @@ import {
 } from '@arco-design/web-react';
 import {
   IconLanguage,
-  IconNotification,
-  IconSunFill,
-  IconMoonFill,
   IconSettings,
   IconPoweroff,
 } from '@arco-design/web-react/icon';
@@ -21,54 +17,70 @@ import { GlobalState } from '@/store';
 import { GlobalContext } from '@/context';
 import useLocale from '@/utils/useLocale';
 import Logo from '@/assets/metablox-logo.png';
-import MessageBox from '@/components/MessageBox';
 import IconButton from './IconButton';
 import Settings from '../Settings';
 import styles from './index.module.less';
 import defaultLocale from '@/locale';
-import useStorage from '@/utils/useStorage';
-import { generatePermission } from '@/routes';
+// import useStorage from '@/utils/useStorage';
+// import { generatePermission } from '@/routes';
 import Image from 'next/image';
+import { getUserInfo, userLoginOut } from '@/request/api';
+import Link from 'next/link';
+import { clearAccount } from '@/utils/function';
+import Router from "next/router"
 function Navbar({ show }: { show: boolean }) {
   const t = useLocale();
   const userInfo = useSelector((state: GlobalState) => state.userInfo);
   const dispatch = useDispatch();
 
-  const [_, setUserStatus] = useStorage('userStatus');
-  const [role, setRole] = useStorage('userRole', 'admin');
+  // const [_, setUserStatus] = useStorage('userStatus');
+  // const [role, setRole] = useStorage('userRole', 'admin');
 
-  const { setLang, lang, theme, setTheme } = useContext(GlobalContext);
+  const { setLang, lang } = useContext(GlobalContext);
 
   function logout() {
-    setUserStatus('logout');
-    window.location.href = '/login';
-  }
-
-  function onMenuItemClick(key) {
-    if (key === 'logout') {
-      logout();
-    } else {
-      Message.info(`You clicked ${key}`);
-    }
-  }
-
-  useEffect(() => {
-    dispatch({
-      type: 'update-userInfo',
-      payload: {
-        userInfo: {
-          ...userInfo,
-          permissions: generatePermission(role),
-        },
-      },
+    userLoginOut({}).then((res) => {
+      const { code } = res;
+      if (code == 200) {
+        // clearAccount();
+        // localStorage.setItem('userStatus', 'logout');
+        // Router.push('/login');
+      } else {
+        Message.info(t['login.form.login.errMsg']);
+      }
     });
-  }, [role]);
+  }
+  //
+  // function onMenuItemClick(key) {
+  //   if (key === 'logout') {
+  //     logout();
+  //   } else {
+  //     Message.info(`You clicked ${key}`);
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   dispatch({
+  //     type: 'update-userInfo',
+  //     payload: {
+  //       userInfo: {
+  //         ...userInfo,
+  //         permissions: generatePermission(role),
+  //       },
+  //     },
+  //   });
+  // }, [role]);
 
   useEffect(() => {
-    setTheme('dark')
+    getUserInfo().then((res) => {
+      if (res.code === 200) {
+        dispatch({
+          type: 'update-userInfo',
+          payload: { userInfo: res.data, loading: false },
+        });
+      }
+    });
   }, []);
-
-
 
   if (!show) {
     return (
@@ -81,14 +93,14 @@ function Navbar({ show }: { show: boolean }) {
       </div>
     );
   }
-  //
+
   // const handleChangeRole = () => {
   //   const newRole = role === 'admin' ? 'user' : 'admin';
   //   setRole(newRole);
   // };
 
   const droplist = (
-    <Menu onClickMenuItem={onMenuItemClick}>
+    <Menu>
       {/*<Menu.SubMenu*/}
       {/*  key="role"*/}
       {/*  title={*/}
@@ -96,21 +108,25 @@ function Navbar({ show }: { show: boolean }) {
       {/*      <IconUser className={styles['dropdown-icon']} />*/}
       {/*      <span className={styles['user-role']}>*/}
       {/*        {role === 'admin'*/}
-      {/*          ? t['menu.user.role.admin']*/}
-      {/*          : t['menu.user.role.user']}*/}
+      {/*          ? t['label.role.admin']*/}
+      {/*          : t['label.role.user']}*/}
       {/*      </span>*/}
       {/*    </>*/}
       {/*  }*/}
       {/*>*/}
       {/*  <Menu.Item onClick={handleChangeRole} key="switch role">*/}
       {/*    <IconTag className={styles['dropdown-icon']} />*/}
-      {/*    {t['menu.user.switchRoles']}*/}
+      {/*    {t['label.switchRoles']}*/}
       {/*  </Menu.Item>*/}
       {/*</Menu.SubMenu>*/}
-      {/*<Menu.Item key="setting">*/}
-      {/*  <IconSettings className={styles['dropdown-icon']} />*/}
-      {/*  {t['menu.user.setting']}*/}
-      {/*</Menu.Item>*/}
+      <Menu.Item key="setting">
+        <Link href={`/personalCenter/settings`}>
+          <div>
+            <IconSettings className={styles['dropdown-icon']} />
+            {t['label.personalCenter.settings']}
+          </div>
+        </Link>
+      </Menu.Item>
       {/*<Menu.SubMenu*/}
       {/*  key="more"*/}
       {/*  title={*/}
@@ -122,12 +138,12 @@ function Navbar({ show }: { show: boolean }) {
       {/*>*/}
       {/*  <Menu.Item key="workplace">*/}
       {/*    <IconDashboard className={styles['dropdown-icon']} />*/}
-      {/*    {t['menu.dashboard.workplace']}*/}
+      {/*    {t['label.dashboard.workplace']}*/}
       {/*  </Menu.Item>*/}
       {/*</Menu.SubMenu>*/}
 
       {/*<Divider style={{ margin: '4px 0' }} />*/}
-      <Menu.Item key="logout">
+      <Menu.Item key="logout" onClick={() => logout()}>
         <IconPoweroff className={styles['dropdown-icon']} />
         {t['navbar.logout']}
       </Menu.Item>
@@ -138,16 +154,9 @@ function Navbar({ show }: { show: boolean }) {
     <div className={styles.navbar}>
       <div className={styles.left}>
         <div className={styles.logo}>
-          <Image
-            src={Logo}
-            alt="Picture of the author"
-            // width={500} automatically provided
-            // height={500} automatically provided
-            // blurDataURL="data:..." automatically provided
-            // placeholder="blur" // Optional blur-up while loading
-          />
-          {/*<Logo />*/}
-          {/*<div className={styles['logo-name']}>Metablox Admin</div>*/}
+          {Logo && (
+            <Image src={Logo ?? 'error.jpg'} alt="Picture of the author" />
+          )}
         </div>
       </div>
       <ul className={styles.right}>
@@ -163,7 +172,7 @@ function Navbar({ show }: { show: boolean }) {
         {/*    options={[*/}
         {/*      { label: 'English', value: 'en-US' },*/}
         {/*      { label: '简体中文', value: 'zh-CN' },*/}
-        {/*//     ]}*/}
+        {/*    ]}*/}
         {/*    value={lang}*/}
         {/*    triggerProps={{*/}
         {/*      autoAlignPopupWidth: false,*/}
@@ -183,20 +192,20 @@ function Navbar({ show }: { show: boolean }) {
         {/*    <IconButton icon={<IconNotification />} />*/}
         {/*  </MessageBox>*/}
         {/*</li>*/}
-        <li>
-          <Tooltip
-            content={
-              theme === 'light'
-                ? t['settings.navbar.theme.toDark']
-                : t['settings.navbar.theme.toLight']
-            }
-          >
-            <IconButton
-              icon={theme !== 'dark' ? <IconMoonFill /> : <IconSunFill />}
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            />
-          </Tooltip>
-        </li>
+        {/*<li>*/}
+        {/*  <Tooltip*/}
+        {/*    content={*/}
+        {/*      theme === 'light'*/}
+        {/*        ? t['settings.navbar.theme.toDark']*/}
+        {/*        : t['settings.navbar.theme.toLight']*/}
+        {/*    }*/}
+        {/*  >*/}
+        {/*    <IconButton*/}
+        {/*      icon={theme !== 'dark' ? <IconMoonFill /> : <IconSunFill />}*/}
+        {/*      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}*/}
+        {/*    />*/}
+        {/*  </Tooltip>*/}
+        {/*</li>*/}
         {/*<Settings />*/}
         {/*{userInfo && (*/}
         {/*  <li>*/}
@@ -205,7 +214,7 @@ function Navbar({ show }: { show: boolean }) {
         {/*        <img*/}
         {/*          alt="avatar"*/}
         {/*          src={*/}
-        {/*            userInfo.avatar ??*/}
+        {/*            userInfo.photoUrl ??*/}
         {/*            'https://lf1-xgcdn-tos.pstatp.com/obj/vcloud/vadmin/start.8e0e4855ee346a46ccff8ff3e24db27b.png'*/}
         {/*          }*/}
         {/*        />*/}

@@ -25,12 +25,9 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env.test
 .env.development.local
 .env.test.local
 .env.production.local
-.env*.local
-.env.test
 
 # vercel
 .vercel
@@ -46,6 +43,7 @@ yarn-error.log*
 .stylelintcache
 /package-lock.json
 /yarn.lock
+/pnpm-lock.yaml
 /.idea
 /.husky/pre-commit
 .npmignore

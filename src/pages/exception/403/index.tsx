@@ -1,6 +1,6 @@
 import React from 'react';
 import { Result, Button } from '@arco-design/web-react';
-import locale from '@/locale/exception/403';
+import locale from '@/locale';
 import useLocale from '@/utils/useLocale';
 import styles from './index.module.less';
 

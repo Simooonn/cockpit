@@ -40,8 +40,6 @@ const auth = (params: Auth, userPermission: UserPermission) => {
     });
   }
 
-  console.log('resource',resource);
-  console.log('userPermission',userPermission);
   const perm = userPermission[resource];
   return judge(actions, perm);
 };

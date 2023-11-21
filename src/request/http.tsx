@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { api_url, clearAccount, getJWTToken } from '@/utils/function';
+import { api_url, clearAccount, getToken } from '@/utils/function';
+import Router from "next/router";
 
 //Call apiURL of back-end interface
 const ApiUrl =
@@ -9,6 +10,7 @@ const ApiUrl =
 
 //Image link domain name
 // const ImgUrl = process.env.REACT_APP_MODE === 'production' ? '' : ''
+// console.log('location.port1',window.location.port);
 
 // Login Route
 const LOGIN = '/login';
@@ -42,9 +44,7 @@ instance.defaults.headers.post['Content-Type'] = 'application/json';
 /** Add request interceptor **/
 instance.interceptors.request.use(
   (config: any) => {
-    config.headers.Authorization =
-      getJWTToken() === null ? '' : 'Bearer ' + getJWTToken();
-    // config.headers.Authorization = "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImtleSIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIweDA4ODMwOTA3ZjJlMmQyMGE1Y2IzN2VlOWUwYThiZGY4YzA2ZTM1MDgiLCJjaGFpbl9pZCI6IjUifQ.WhLg77Nuud77faL_fTpJ-3-bAA2oJtQkRb4uMiS2GFMuaX6CmDL_Oadra1tQEeIUkk2ABYqUuxBu7L2T90n-V5jycLVc5_B12BWOKaVbdML5_sarO9YzYlhbhI8poWWmMYBHlHz3kdhas9y-LIQYiXM_ZUlg6Prr7dQkl0Baz__0S3-5b2JJjQ-m4rYfRyzI0ipnvQuPnEjPyLTxzwgtEXOVu9p5ckNOtKE2UCBSu-XWIhp9QByVnRgmevJ62pdNDSh1X_MvnKp5TJ4jGZKJAZZSFT_v_fF6W5t-_nd9lnYLPyIpUo9bB77MyWvkktBS4g5R7_MdU4sksLfCd0aFyg"
+    config.headers.token = getToken() === null ? '' : getToken();
 
     // config.headers = {
     //     "Cookie": `user-auth-token=${dbGetJWTToken()};`
@@ -71,15 +71,19 @@ instance.interceptors.request.use(
 /** Add Response Interceptor  **/
 instance.interceptors.response.use(
   (response) => {
-    console.log('response', response.data.code);
     // hide()
     if (response.status === 200) {
-      if (response.data.code === 403) {
-        clearAccount();
-        window.location.href = LOGIN;
+      if (response.data.code === 401 || response.data.code === 403) {
+        console.log('response400', response);
+        // clearAccount();
+        // Router.push(LOGIN);
+      } else {
+        console.log('response200', response);
       }
+
       return Promise.resolve(response.data);
     } else {
+      console.log('response！200', response);
       // message.error('Response timeout')
       return Promise.reject(response.data.message);
     }
@@ -94,19 +98,26 @@ instance.interceptors.response.use(
       //     return Promise.reject(error.response.data)
       // }
       if (error.response.status === 401) {
+        console.log('error.response400', error.response);
+
         // If the token or login fails, you can jump to the login page. According to the actual situation, you can do the corresponding things here according to different response error results. Take 401 judgment as an example
         // Jump to the login page for the framework
         // this.props.history.push(LOGIN);
-        clearAccount();
-        window.location.href = LOGIN;
-      }
-      if (error.response.status === 500) {
+        // clearAccount();
+        // Router.push(LOGIN);
+      } else if (error.response.status === 500) {
+        console.log('error.response500', error.response);
+
         error.response.data.msg = 'Internal Server Error';
       } else {
+        console.log('error.response1else', error.response);
+
         return Promise.reject(error.response.data);
       }
       return Promise.reject(error);
     } else {
+      console.log('error.response2', error.response);
+
       // message.error('Request timeout, please refresh and try again')
       return Promise.reject('Request timeout, please refresh and try again');
     }

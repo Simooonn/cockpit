@@ -1,12 +1,11 @@
 import defaultSettings from '../settings.json';
+import { setLocalUser } from '@/utils/function';
 export interface GlobalState {
   settings?: typeof defaultSettings;
   userInfo?: {
-    name?: string;
-    avatar?: string;
-    job?: string;
-    organization?: string;
-    location?: string;
+    id?: number;
+    displayName?: string;
+    photoUrl?: string;
     email?: string;
     permissions: Record<string, string[]>;
   };
@@ -31,6 +30,7 @@ export default function store(state = initialState, action) {
     }
     case 'update-userInfo': {
       const { userInfo = initialState.userInfo, userLoading } = action.payload;
+      setLocalUser(userInfo);
       return {
         ...state,
         userLoading,

@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import { uploadFile } from '@/request/api';
+import { Message } from '@arco-design/web-react';
 // import db from "@@/utils/db/browserDb";
 // import {dexieDB} from "@@/utils/db/indexDB";
 // const dbStore = db;
@@ -100,6 +102,21 @@ export function array_column(
     return obj;
   }
 }
+//
+// function key2Lower(obj) {
+//   const newO = {};
+//   for (const key in obj) {
+//     newO[key.toLowerCase()] = obj[key];
+//   }
+//   return newO;
+// }
+// function key2Upper(obj) {
+//   const newO = {};
+//   for (const key in obj) {
+//     newO[key.toUpperCase()] = obj[key];
+//   }
+//   return newO;
+// }
 
 // export function explode(str,separator){
 //   return str.split(separator)
@@ -118,6 +135,9 @@ export function array_column(
 // }
 //
 export function conversionUtcDate(date, type = 'local') {
+  if (date === null) {
+    return '';
+  }
   dayjs.extend(utc);
   if (type === 'local') {
     // Pass in local to convert UTC time to local time
@@ -173,17 +193,21 @@ export function getLocal(key = '') {
     return '';
   }
 
-  key = md5(key);
-  //When the obtained data is null or does not contain the specified string, null is returned directly
-  const result = localStorage.getItem(key);
-  if (result === null || result.indexOf(localStorageKey) === -1) {
-    return null;
-  }
+  if (typeof window !== 'undefined') {
+    key = md5(key);
+    //When the obtained data is null or does not contain the specified string, null is returned directly
+    const result = localStorage.getItem(key);
+    if (result === null || result.indexOf(localStorageKey) === -1) {
+      return null;
+    }
 
-  //The json string is parsed into an object
-  const data = json_to_obj(result)[localStorageKey];
-  let undef;
-  return data === 'undefined' ? undef : data;
+    //The json string is parsed into an object
+    const data = json_to_obj(result)[localStorageKey];
+    let undef;
+    return data === 'undefined' ? undef : data;
+  } else {
+    return '';
+  }
 }
 
 /* set JWTToken  */
@@ -194,6 +218,15 @@ export function setJWTToken(value: any) {
 /* get JWTToken */
 export function getJWTToken() {
   return getLocal('JWTToken');
+}
+/* set Token */
+export function setToken(value: any) {
+  return setLocal('token', value);
+}
+
+/* get Token */
+export function getToken() {
+  return getLocal('token');
 }
 
 /* getLocalUser */
@@ -209,6 +242,30 @@ export function setLocalUser(value: any) {
 /* delLocalUser */
 export function delLocalUser() {
   return deleteLocal('user');
+}
+
+/* getLocalDictData */
+export function getLocalDictData() {
+  return getLocal('DictData');
+}
+
+/* setLocalDictData */
+export function setLocalDictData(value: any) {
+  const data: any = {};
+  for (const kk in value) {
+    data[value[kk].type] = value[kk].list;
+  }
+  return setLocal('DictData', data);
+}
+
+/* set MinerMapData  */
+export function setMinerMapData(value: any) {
+  return setLocal('MinerMapData', value);
+}
+
+/* get MinerMapData */
+export function getMinerMapData() {
+  return empty(getLocal('MinerMapData')) ? [] : getLocal('MinerMapData');
 }
 
 export function copy_text(content: string) {
@@ -240,7 +297,7 @@ export function api_url() {
   if (typeof window !== 'undefined') {
     let wUrl;
     const port = window.location.port;
-    if (window.location.origin.indexOf('admin.metablox.io') != -1) {
+    if (window.location.origin.indexOf('cockpit.metablox.io') != -1) {
       if (port == '80' || port == '443' || port == '') {
         //prod
         wUrl = 'https://api.metablox.io';
@@ -266,6 +323,59 @@ export function api_url() {
 export function time_to_rfc3339(time) {
   return new Date(time).toISOString();
 }
+
+// 正则替换小数点
+export const limitNumber = (value) => {
+  if (typeof value === 'string') {
+    return !isNaN(Number(value)) ? value.replace(/[^0-9]/g, '') : 0;
+  } else if (typeof value === 'number') {
+    return !isNaN(value) ? String(value).replace(/[^0-9]/g, '') : 0;
+  } else {
+    return 0;
+  }
+};
+
+export const data_dictionary = (key: string) => {
+  return getLocalDictData()?.[key] ?? [];
+};
+
+export const handleUpload = async (options: any) => {
+  const params: any = new FormData();
+  params.append('file', options.file);
+  params.append('content_type', 'multipart/form-data');
+  const res1 = await uploadFile(params);
+  if (res1?.code !== 200) {
+    Message.error(res1?.msg ?? 'File upload failed!');
+    return false;
+  }
+  const imgurl = res1?.data?.url;
+  if (!imgurl || imgurl?.length <= 0) {
+    Message.error('File does not exist!');
+    return false;
+  }
+  options.onSuccess(imgurl);
+  return imgurl;
+};
+
+export const beforeUploadFile = (
+  file,
+  allowSize = 2,
+  allowType: string | string[] = '*'
+) => {
+  return new Promise((resolve, reject) => {
+    if (allowType !== '*' && !allowType.includes(file.type)) {
+      Message.error('File type not supported');
+      return reject('File type not supported');
+    }
+    const isAllowSize = file.size < allowSize * 1024 * 1024;
+    if (!isAllowSize) {
+      const msg = `The file size exceeds the limit. Please select a file that is within ${allowSize}MB for uploading.`;
+      Message.error(msg);
+      return reject(msg);
+    }
+    return resolve(true);
+  });
+};
 
 export function getDay(day) {
   const today = new Date();
@@ -298,4 +408,5 @@ export function doHandleMonth(month) {
   }
   return m;
 }
+
 export {};
