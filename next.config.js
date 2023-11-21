@@ -43,7 +43,8 @@ module.exports = withLess(
     },
     pageExtensions: ['tsx'],
     env: {
-      NEXT_APP_API_URL: process.env.NEXT_APP_API_URL,
+        NEXT_APP_API_URL: process.env.NEXT_APP_API_URL,
+        NEXT_GOOGLE_MAP_API_KEY: process.env.NEXT_GOOGLE_MAP_API_KEY,
     },
     // next.config.js
     async rewrites() {

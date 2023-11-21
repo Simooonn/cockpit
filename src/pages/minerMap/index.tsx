@@ -287,7 +287,7 @@ const App = () => {
         // create svg url with fill color
       /*  const svg = window.btoa(`
   <svg fill="${color}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
-    <circle cx="120" cy="120" opacity=".8" r="70" />    
+    <circle cx="120" cy="120" opacity=".8" r="70" />
   </svg>`);*/
         const svg = window.btoa(`
 <svg fill="#CE44FF" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="50" height="50">
@@ -365,6 +365,7 @@ const App = () => {
 
   useEffect(() => {
     console.log('map data total',data?.length);
+    console.log('process.env.NEXT_GOOGLE_MAP_API_KEY',process.env.NEXT_GOOGLE_MAP_API_KEY);
 
     // fetchMapMarkers();
   }, []);
@@ -374,7 +375,7 @@ const App = () => {
       <div style={{ height: '80vh', width: '90%', marginTop: '2vh' }}>
         <GoogleMapReact
           bootstrapURLKeys={{
-            key: 'AIzaSyAun_1_HZnG6zTID4uHXhzfhsPZVnO2TEY',
+            key: process.env.NEXT_GOOGLE_MAP_API_KEY,
             libraries: [
                 'marker',
               // 'visualization',
