@@ -2,8 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import {
   Card,
   Divider,
-  Grid,
-  Message,
+  Grid, Message,
   Select,
   Skeleton,
   Space,
@@ -14,12 +13,15 @@ import { useSelector } from 'react-redux';
 import locale from '@/locale';
 import useLocale from '@/utils/useLocale';
 import * as eCharts from 'echarts';
-import { ChartGroup, ChartToday, ChartTotal, userLogin } from '@/request/api';
+import {
+  ChartGroup,
+  ChartToday,
+  ChartTotal, minerMapView, userLogin,
+} from '@/request/api';
 import styles from '@/pages/dashboard/style/overview.module.less';
-import { array_column, getDay, setJWTToken } from '@/utils/function';
+import {array_column, getDay, getToken, setJWTToken, setMinerMapData, setToken} from "@/utils/function";
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
-const ApoApiURL =
-  'https://api.thegraph.com/subgraphs/name/simooonn/metablox-cockpit';
+const ApoApiURL = 'https://api.thegraph.com/subgraphs/name/simooonn/metablox-cockpit';
 const ApoClient = new ApolloClient({
   uri: ApoApiURL,
   cache: new InMemoryCache(),
@@ -28,23 +30,22 @@ const { Row, Col } = Grid;
 const { Title } = Typography;
 const Option = Select.Option;
 
-const TimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const TimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 function Overview() {
   const t = useLocale(locale);
-  const userInfo = useSelector((state: any) => state.userInfo || {});
-  const eChartsRef: any = React.createRef();
+  // const eChartsRef: any = React.createRef();
   const [todayData, setTodayData] = useState<any>({});
   const [todayHeartbeat, setTodayHeartbeat] = useState<any>('');
   const [totalData, setTotalData] = useState<any>({});
   const [totalHeartbeat, setTotalHeartbeat] = useState<any>('');
   const [registerTotalCount, setRegisterTotalCount] = useState('');
-  const [date1, setDate1] = useState<'month' | 'week' | 'day'>('day');
-  const [date2, setDate2] = useState<'month' | 'week' | 'day'>('day');
-  const [date3, setDate3] = useState<'month' | 'week' | 'day'>('day');
-  const [date4, setDate4] = useState<'month' | 'week' | 'day'>('day');
-  const [date5, setDate5] = useState<'month' | 'week' | 'day'>('day');
-  const [date6, setDate6] = useState<'month' | 'week' | 'day'>('day');
+  const [date1, setDate1] = useState<'month' | 'week' | 'day'>('month');
+  const [date2, setDate2] = useState<'month' | 'week' | 'day'>('month');
+  const [date3, setDate3] = useState<'month' | 'week' | 'day'>('month');
+  const [date4, setDate4] = useState<'month' | 'week' | 'day'>('month');
+  const [date5, setDate5] = useState<'month' | 'week' | 'day'>('month');
+  const [date6, setDate6] = useState<'month' | 'week' | 'day'>('month');
   const [data1, setData1] = useState<any>({});
   const [data2, setData2] = useState<any>({});
   const [data3, setData3] = useState<any>({});
@@ -52,14 +53,14 @@ function Overview() {
   const [data5, setData5] = useState<any>({});
   const [data6, setData6] = useState<any>({});
   const eChartsRef1: any = React.createRef();
-  const eChartsRef2: any = React.createRef();
-  const eChartsRef3: any = React.createRef();
-  const eChartsRef4: any = React.createRef();
+  // const eChartsRef2: any = React.createRef();
+  // const eChartsRef3: any = React.createRef();
+  // const eChartsRef4: any = React.createRef();
   const eChartsRef5: any = React.createRef();
   const eChartsRef6: any = React.createRef();
 
   const optionsDate = [
-    { code: 'day', name: 'Day' },
+    // { code: 'day', name: 'Day' },
     { code: 'week', name: 'Week' },
     { code: 'month', name: 'Month' },
   ];
@@ -74,11 +75,7 @@ function Overview() {
   function StatisticItem(props: StatisticItemType) {
     const {
       // icon,
-      title,
-      count,
-      loading,
-      unit,
-    } = props;
+      title, count, loading, unit } = props;
     return (
       <div className={styles.item}>
         {/*<div className={styles.icon}>{icon}</div>*/}
@@ -138,7 +135,7 @@ function Overview() {
 
   const fetchData = () => {
     ChartToday({
-      loc: TimeZone,
+      loc:TimeZone
     }).then((res) => {
       const { code } = res;
       const data = res?.data ?? {};
@@ -148,7 +145,7 @@ function Overview() {
     });
 
     ChartTotal({
-      loc: TimeZone,
+      loc:TimeZone
     }).then((res) => {
       const { code } = res;
       const data = res?.data ?? {};
@@ -157,21 +154,21 @@ function Overview() {
       }
     });
 
-    getDayHeartbeat().then((res) => {
-      const data = {
-        time: [],
-        count: [],
-      };
-      for (const resKey in res) {
-        data.time = [...data.time, res[resKey]?.time];
-        data.count = [...data.count, res[resKey]?.count];
-      }
-      setData2(data);
-    });
+    // getDayHeartbeat().then((res) => {
+    //   const data = {
+    //     time:[],
+    //     count:[],
+    //   }
+    //   for (const resKey in res) {
+    //     data.time = [...data.time,res[resKey]?.time]
+    //     data.count = [...data.count,res[resKey]?.count]
+    //   }
+    //   setData2(data);
+    // });
 
     ChartGroup({
       group: date1,
-      loc: TimeZone,
+      loc:TimeZone
       // loc:(0 - new Date().getTimezoneOffset() / 60)
     }).then((res) => {
       const { code } = res;
@@ -187,10 +184,10 @@ function Overview() {
   };
 
   const fetchChartData = (type = 1) => {
-    if (type === 1) {
+    if(type === 1){
       ChartGroup({
         group: date1,
-        loc: TimeZone,
+        loc:TimeZone
         // loc:(0 - new Date().getTimezoneOffset() / 60)
       }).then((res) => {
         const { code } = res;
@@ -213,10 +210,10 @@ function Overview() {
     //     }
     //   });
     // }
-    else if (type === 3) {
+    else if(type === 3){
       ChartGroup({
         group: date3,
-        loc: TimeZone,
+        loc:TimeZone
         // loc:(0 - new Date().getTimezoneOffset() / 60)
       }).then((res) => {
         const { code } = res;
@@ -225,10 +222,11 @@ function Overview() {
           setData3(data);
         }
       });
-    } else if (type === 4) {
+    }
+    else if(type === 4){
       ChartGroup({
         group: date4,
-        loc: TimeZone,
+        loc:TimeZone
         // loc:(0 - new Date().getTimezoneOffset() / 60)
       }).then((res) => {
         const { code } = res;
@@ -237,10 +235,11 @@ function Overview() {
           setData4(data);
         }
       });
-    } else if (type === 5) {
+    }
+    else if(type === 5){
       ChartGroup({
         group: date5,
-        loc: TimeZone,
+        loc:TimeZone
         // loc:(0 - new Date().getTimezoneOffset() / 60)
       }).then((res) => {
         const { code } = res;
@@ -249,10 +248,11 @@ function Overview() {
           setData5(data);
         }
       });
-    } else if (type === 6) {
+    }
+    else if(type === 6){
       ChartGroup({
         group: date6,
-        loc: TimeZone,
+        loc:TimeZone
         // loc:(0 - new Date().getTimezoneOffset() / 60)
       }).then((res) => {
         const { code } = res;
@@ -264,104 +264,109 @@ function Overview() {
     }
   };
 
-  const dateConversion = (date = '', type = 'day') => {
-    let data = '';
-    if (type === 'day') {
-      data = date.replaceAll('-', '.');
-    } else if (type === 'week') {
-      data = date.substr(0, 4) + ',Week' + date.substr(4, 2);
-    } else if (type === 'month') {
-      const month = {
-        month1: 'Jan.',
-        month2: 'Feb.',
-        month3: 'Mar.',
-        month4: 'Apr.',
-        month5: 'May.',
-        month6: 'Jun.',
-        month7: 'Jul.',
-        month8: 'Aug.',
-        month9: 'Sep.',
-        month10: 'Oct.',
-        month11: 'Nov.',
-        month12: 'Dec.',
-      };
-      data = month?.['month' + date];
-    } else {
-      data = date;
+  const dateConversion = (date = '',type='day') => {
+    let data = ''
+    if(type === 'day'){
+      data = date.replaceAll('-','.')
     }
-    return data;
-  };
+    else if(type === 'week'){
+      data = date.substr(0,4)+',Week'+date.substr(4,2)
+    }
+    else if(type === 'month'){
+      const month = {
+        month1:'Jan.',
+        month2:'Feb.',
+        month3:'Mar.',
+        month4:'Apr.',
+        month5:'May.',
+        month6:'Jun.',
+        month7:'Jul.',
+        month8:'Aug.',
+        month9:'Sep.',
+        month10:'Oct.',
+        month11:'Nov.',
+        month12:'Dec.',
+      }
+      data = month?.['month'+date]
+    }
+    else {
+      data = date
+    }
+    return data
+  }
 
-  const initChartMiners = () => {
-    const myChart = eCharts.init(eChartsRef.current, 'dark', {
-      renderer: 'svg',
-    });
-    const option = {
-      // color:[
-      //   "rgb(73, 146, 255)",
-      //   "rgb(124, 255, 178)",
-      //   "rgb(253, 221, 96)",
-      //   "rgb(255, 110, 118)",
-      //   "rgb(88, 217, 249)",
-      //   "rgb(5, 192, 145)",
-      //   "rgb(255, 138, 69)",
-      // ],
-      title: {
-        text: 'Total WiFi',
-        // subtext: 'Fake Data',
-        // left: 'center'
-      },
-      backgroundColor: '#ffffff00',
-      tooltip: {
-        //     trigger: 'item'
-      },
-      legend: {
-        left: 'center',
-      },
-      label: {
-        show: true,
-        formatter(param) {
-          // correct the percentage
-          return param.name + ' (' + param.percent + '% , ' + param.value + ')';
-        },
-      },
-      series: [
-        {
-          name: 'Miners',
-          type: 'pie',
-          radius: '50%',
-          data: [
-            {
-              value: totalData?.totalMetabloxMinerNum ?? 0,
-              name: 'OpenRoaming WiFi',
-              color: '#ffffff',
-              background: '#ffffff',
-            },
-            {
-              value: totalData?.totalLiteMinerNum ?? 0,
-              name: 'Community WiFi',
-            },
-            // {
-            //   value: 12,
-            //   name: 'Public Free WiFi',
-            // },
-          ],
-          emphasis: {
-            itemStyle: {
-              // shadowBlur: 10,
-              // shadowOffsetX: 0,
-              // shadowColor: 'rgba(0, 0, 0, 0.5)'
-            },
-          },
-        },
-      ],
-    };
-    myChart.setOption(option);
-  };
+  // const initChartMiners = () => {
+  //   const myChart = eCharts.init(eChartsRef.current, 'dark', {
+  //     renderer: 'svg',
+  //   });
+  //   const option = {
+  //     // color:[
+  //     //   "rgb(73, 146, 255)",
+  //     //   "rgb(124, 255, 178)",
+  //     //   "rgb(253, 221, 96)",
+  //     //   "rgb(255, 110, 118)",
+  //     //   "rgb(88, 217, 249)",
+  //     //   "rgb(5, 192, 145)",
+  //     //   "rgb(255, 138, 69)",
+  //     // ],
+  //     title: {
+  //       text: 'Total WiFi',
+  //       // subtext: 'Fake Data',
+  //       // left: 'center'
+  //     },
+  //     backgroundColor: '#ffffff00',
+  //     tooltip: {
+  //       //     trigger: 'item'
+  //     },
+  //     legend: {
+  //       left: 'center',
+  //     },
+  //     label: {
+  //       show: true,
+  //       formatter(param) {
+  //         // correct the percentage
+  //         return param.name + ' (' + param.percent + '% , '+param.value+')';
+  //       }
+  //     },
+  //     series: [
+  //       {
+  //         name: 'Miners',
+  //         type: 'pie',
+  //         radius: '50%',
+  //         data: [
+  //           {
+  //             value: totalData?.totalMetabloxMinerNum ?? 0,
+  //             name: 'OpenRoaming WiFi',
+  //             color: '#ffffff',
+  //             background: '#ffffff',
+  //           },
+  //           {
+  //             value: totalData?.totalLiteMinerNum ?? 0,
+  //             name: 'Community WiFi',
+  //           },
+  //           // {
+  //           //   value: 12,
+  //           //   name: 'Public Free WiFi',
+  //           // },
+  //         ],
+  //         emphasis: {
+  //           itemStyle: {
+  //             // shadowBlur: 10,
+  //             // shadowOffsetX: 0,
+  //             // shadowColor: 'rgba(0, 0, 0, 0.5)'
+  //           },
+  //         },
+  //       },
+  //     ],
+  //   };
+  //   myChart.setOption(option);
+  // };
 
-  const initLineOption = (color, chartTitle, lineTitle, xData, yData) => {
+  const initLineOption = (color,chartTitle,lineTitle,xData,yData) => {
     return {
-      color: [color],
+      color:[
+        color,
+      ],
       backgroundColor: '#ffffff00',
       title: {
         text: chartTitle,
@@ -380,8 +385,8 @@ function Overview() {
       yAxis: {
         type: 'value',
         max: function (value) {
-          return value.max <= 5 ? 5 : null;
-        },
+          return value.max <= 5 ? 5: null;
+        }
       },
       series: [
         {
@@ -393,150 +398,133 @@ function Overview() {
           lineStyle: {
             width: 2,
           },
-          areaStyle: {
+          areaStyle:{
             opacity: 0.2,
-          },
+          }
         },
       ],
     };
-  };
+
+
+  }
 
   const initChart1 = () => {
     const myChart = eCharts.init(eChartsRef1.current, 'dark', {
       renderer: 'svg',
     });
-    const xData = (data1?.time ?? [])?.map((ittt) => {
-      return dateConversion(ittt, date1);
-    });
-    const yData = data1?.check ?? [];
-    xData.pop();
-    yData.pop();
-    myChart.setOption(
-      initLineOption(
-        'rgb(73, 146, 255)',
-        'Check in Growth Quantity',
-        'Check In',
-        xData,
-        yData
-      )
-    );
+    const xData = (data1?.time ?? [])?.map(ittt=>{
+      return dateConversion(ittt,date1)
+    })
+    const yData = data1?.check ?? []
+    xData.pop()
+    yData.pop()
+    myChart.setOption(initLineOption( "rgb(73, 146, 255)",'Check in Growth Quantity','Check In',xData,yData))
   };
 
-  const initChart2 = () => {
-    const myChart = eCharts.init(eChartsRef2.current, 'dark', {
-      renderer: 'svg',
-    });
-
-    const xData = (data2?.time ?? [])?.map((ittt) => {
-      return '2023.' + ittt.replace('-', '.');
-    });
-    const yData = data2?.count ?? [];
-    myChart.setOption(
-      initLineOption(
-        'rgb(124, 255, 178)',
-        'Heartbeat trading Growth Quantity',
-        'Heartbeat trading',
-        xData,
-        yData
-      )
-    );
-  };
-
-  const initChart3 = () => {
-    let nnum = data3?.memberBase;
-    const myChart = eCharts.init(eChartsRef3.current, 'dark', {
-      renderer: 'svg',
-    });
-
-    const xData = (data3?.time ?? [])?.map((ittt) => {
-      return dateConversion(ittt, date3);
-    });
-    const yData = (data3?.member ?? [])?.map((ittt) => {
-      nnum = nnum + ittt;
-      return nnum;
-    });
-    myChart.setOption(
-      initLineOption(
-        'rgb(253, 221, 96)',
-        'Accumulated number of App User',
-        'App User',
-        xData,
-        yData
-      )
-    );
-  };
-
-  const initChart4 = () => {
-    let nnum = data4?.wiFiBase;
-    const myChart = eCharts.init(eChartsRef4.current, 'dark', {
-      renderer: 'svg',
-    });
-
-    const xData = (data4?.time ?? [])?.map((ittt) => {
-      return dateConversion(ittt, date4);
-    });
-    const yData = (data4?.wifi ?? [])?.map((ittt) => {
-      nnum = nnum + ittt;
-      return nnum;
-    });
-    myChart.setOption(
-      initLineOption(
-        'rgb(255, 110, 118)',
-        'Accumulated number of New Added WiFi',
-        'New Added WiFi',
-        xData,
-        yData
-      )
-    );
-  };
+  // const initChart2 = () => {
+  //   const myChart = eCharts.init(eChartsRef2.current, 'dark', {
+  //     renderer: 'svg',
+  //   });
+  //
+  //   const xData = (data2?.time ?? [])?.map(ittt=>{
+  //     return '2023.'+ittt.replace('-','.')
+  //   })
+  //   const yData = data2?.count ?? []
+  //   myChart.setOption(initLineOption( "rgb(124, 255, 178)",'Heartbeat trading Growth Quantity','Heartbeat trading',xData,yData))
+  // };
+  //
+  // const initChart3 = () => {
+  //   let nnum = data3?.memberBase
+  //   const myChart = eCharts.init(eChartsRef3.current, 'dark', {
+  //     renderer: 'svg',
+  //   });
+  //
+  //   const xData =  (data3?.time ?? [])?.map(ittt=>{
+  //     return dateConversion(ittt,date3)
+  //   })
+  //   const yData = (data3?.member ?? [])?.map(ittt=>{
+  //     nnum = nnum + ittt
+  //     return nnum
+  //   })
+  //   myChart.setOption(initLineOption( "rgb(253, 221, 96)",'Accumulated number of App User','App User',xData,yData))
+  // };
+  //
+  // const initChart4 = () => {
+  //   let nnum = data4?.wiFiBase
+  //   const myChart = eCharts.init(eChartsRef4.current, 'dark', {
+  //     renderer: 'svg',
+  //   });
+  //
+  //   const xData = (data4?.time ?? [])?.map(ittt=>{
+  //     return dateConversion(ittt,date4)
+  //   })
+  //   const yData = (data4?.wifi ?? [])?.map(ittt=>{
+  //     nnum = nnum + ittt
+  //     return nnum
+  //   })
+  //   myChart.setOption(initLineOption( "rgb(255, 110, 118)",'Accumulated number of New Added WiFi','New Added WiFi',xData,yData))
+  // };
 
   const initChart5 = () => {
-    let nnum = data5?.pointBase;
+    let nnum = data5?.pointBase
     const myChart = eCharts.init(eChartsRef5.current, 'dark', {
       renderer: 'svg',
     });
 
-    const xData = (data5?.time ?? [])?.map((ittt) => {
-      return dateConversion(ittt, date5);
-    });
-    const yData = (data5?.point ?? [])?.map((ittt) => {
-      nnum = nnum + ittt;
-      return nnum;
-    });
-    myChart.setOption(
-      initLineOption(
-        'rgb(88, 217, 249)',
-        'Accumulated number of Issued mPoints',
-        'Issued mPoints',
-        xData,
-        yData
-      )
-    );
+    const xData = (data5?.time ?? [])?.map(ittt=>{
+      return dateConversion(ittt,date5)
+    })
+    const yData = (data5?.point ?? [])?.map(ittt=>{
+      nnum = nnum + ittt
+      return nnum
+    })
+    myChart.setOption(initLineOption( "rgb(88, 217, 249)",'Accumulated number of Issued mPoints','Issued mPoints',xData,yData))
   };
 
   const initChart6 = () => {
-    let nnum = data6?.stickerBase;
+    let nnum = data6?.stickerBase
     const myChart = eCharts.init(eChartsRef6.current, 'dark', {
       renderer: 'svg',
     });
 
-    const xData = (data6?.time ?? [])?.map((ittt) => {
-      return dateConversion(ittt, date6);
-    });
-    const yData = (data6?.sticker ?? [])?.map((ittt) => {
-      nnum = nnum + ittt;
-      return nnum;
-    });
-    myChart.setOption(
-      initLineOption(
-        'rgb(255, 138, 69)',
-        'Accumulated number of Issued Stickers',
-        'Issued Stickers',
-        xData,
-        yData
-      )
-    );
+    const xData = (data6?.time ?? [])?.map(ittt=>{
+      return dateConversion(ittt,date6)
+    })
+    const yData = (data6?.sticker ?? [])?.map(ittt=>{
+      nnum = nnum + ittt
+      return nnum
+    })
+    myChart.setOption(initLineOption( "rgb(255, 138, 69)",'Accumulated number of Issued Stickers','Issued Stickers',xData,yData))
   };
+
+  const initMapData = async () => {
+    //init miner map data
+    const formData = {
+      latitude: 0,
+      longitude: 0,
+      page: 1,
+      size: 1000,
+    }
+    let data = [];
+    const res = await minerMapView(formData);
+    if (res?.code !== 200) {
+      Message.error(res?.code);
+      return false;
+    }
+    data = res?.data?.list??[]
+    const totalPageNum = Math.ceil(res?.data?.total/formData.size)
+    if(totalPageNum > 1){
+      for (let i = 2; i <= totalPageNum; i++) {
+        const re0 = await minerMapView({...formData,page:i});
+        if (re0?.code !== 200) {
+          Message.error(re0?.code);
+          return false;
+        }
+        data = [...data,...(re0?.data?.list??[])]
+      }
+    }
+    setMinerMapData(data);
+  }
 
   const getHeartbeatTotalCount = async () => {
     const tokensQuery = `
@@ -549,12 +537,12 @@ function Overview() {
     ApoClient.query({
       query: gql(tokensQuery),
     })
-      .then((data) => {
-        setTotalHeartbeat(data?.data?.heartbeatSummaries?.[0]?.totalCount ?? 0);
-      })
-      .catch((err) => {
-        console.log('Error fetching heartbeatSummaries: ', err);
-      });
+        .then((data) => {
+          setTotalHeartbeat(data?.data?.heartbeatSummaries?.[0]?.totalCount ?? 0)
+        })
+        .catch((err) => {
+          console.log('Error fetching heartbeatSummaries: ', err);
+        });
   };
 
   const getTodayHeartbeat = async () => {
@@ -574,13 +562,13 @@ function Overview() {
         // id: '2023-3-21',
       },
     })
-      .then((rr) => {
-        setTodayHeartbeat(rr?.data?.heartbeatDailySummary?.count ?? 0);
-        return rr.data;
-      })
-      .catch((err) => {
-        console.log('Error fetching heartbeatDailySummary: ', err);
-      });
+        .then((rr) => {
+          setTodayHeartbeat(rr?.data?.heartbeatDailySummary?.count ?? 0);
+          return rr.data;
+        })
+        .catch((err) => {
+          console.log('Error fetching heartbeatDailySummary: ', err);
+        });
   };
   const getRegisterTotalCount = async () => {
     const tokensQuery = `
@@ -593,14 +581,14 @@ function Overview() {
     ApoClient.query({
       query: gql(tokensQuery),
     })
-      .then((data) => {
-        setRegisterTotalCount(
-          data?.data?.registeredSummaries?.[0]?.totalCount ?? 0
-        );
-      })
-      .catch((err) => {
-        console.log('Error fetching registeredSummaries: ', err);
-      });
+        .then((data) => {
+          setRegisterTotalCount(
+              data?.data?.registeredSummaries?.[0]?.totalCount ?? 0
+          );
+        })
+        .catch((err) => {
+          console.log('Error fetching registeredSummaries: ', err);
+        });
   };
 
   const getDayHeartbeat = async () => {
@@ -622,39 +610,40 @@ function Overview() {
         id_lt: day2,
       },
     })
-      .then((rr) => {
-        const dataList = [];
-        const res = rr.data?.heartbeatDailySummaries;
-        for (const rrKey in res) {
-          dataList.push({
-            name: 'Heartbeat',
-            time: res[rrKey]?.id.slice(5),
-            count: parseInt(res[rrKey]?.count),
-          });
-        }
-        return dataList;
-      })
-      .catch((err) => {
-        console.log('Error fetching getRegisterTotalCount: ', err);
-        return [];
-      });
+        .then((rr) => {
+          const dataList = [];
+          const res = rr.data?.heartbeatDailySummaries;
+          for (const rrKey in res) {
+            dataList.push({
+              name: 'Heartbeat',
+              time: res[rrKey]?.id.slice(5),
+              count: parseInt(res[rrKey]?.count),
+            });
+          }
+          return dataList;
+        })
+        .catch((err) => {
+          console.log('Error fetching getRegisterTotalCount: ', err);
+          return [];
+        });
   };
 
-  useEffect(() => {
-    initChartMiners();
-  }, [totalData]);
+
+  // useEffect(() => {
+  //   initChartMiners();
+  // }, [totalData]);
   useEffect(() => {
     initChart1();
   }, [data1]);
-  useEffect(() => {
-    initChart2();
-  }, [data2]);
-  useEffect(() => {
-    initChart3();
-  }, [data3]);
-  useEffect(() => {
-    initChart4();
-  }, [data4]);
+  // useEffect(() => {
+  //   initChart2();
+  // }, [data2]);
+  // useEffect(() => {
+  //   initChart3();
+  // }, [data3]);
+  // useEffect(() => {
+  //   initChart4();
+  // }, [data4]);
   useEffect(() => {
     initChart5();
   }, [data5]);
@@ -662,61 +651,78 @@ function Overview() {
     initChart6();
   }, [data6]);
   useEffect(() => {
-    fetchChartData(1);
+    if(getToken()){
+      fetchChartData(1);
+    }
   }, [date1]);
   useEffect(() => {
-    fetchChartData(2);
+    if(getToken()){
+      fetchChartData(2);
+    }
   }, [date2]);
   useEffect(() => {
-    fetchChartData(3);
+    if(getToken()){
+      fetchChartData(3);
+    }
   }, [date3]);
   useEffect(() => {
-    fetchChartData(4);
+    if(getToken()){
+      fetchChartData(4);
+    }
   }, [date4]);
   useEffect(() => {
-    fetchChartData(5);
+    if(getToken()){
+      fetchChartData(5);
+    }
   }, [date5]);
   useEffect(() => {
-    fetchChartData(6);
+    if(getToken()){
+      fetchChartData(6);
+    }
   }, [date6]);
   useEffect(() => {
     userLogin({ username: 'admin', password: '@#dappley792&*' }).then(
-      async (res) => {
-        const { code, msg, data } = res;
-
-        if (code == 200) {
-          setJWTToken(data?.token);
-          fetchData();
+        async (res) => {
+          const { code, msg, data } = res;
+          if (code == 200) {
+            setToken(data?.token);
+            fetchData();
+            initMapData()
+          }
         }
-      }
     );
-    getHeartbeatTotalCount();
-    getTodayHeartbeat();
-    getRegisterTotalCount();
+    // getHeartbeatTotalCount()
+    // getTodayHeartbeat()
+    // getRegisterTotalCount()
   }, []);
+
 
   return (
     <Space size={16} direction="vertical" style={{ width: '100%' }}>
       <Row>
         <Col span={24}>
           <Card>
-            <Typography.Title heading={5}>
-              {t['workplace.welcomeBack']}
-              {userInfo.username}
-            </Typography.Title>
-          </Card>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
-          <Card>
-            <Typography.Title heading={6}>Total</Typography.Title>
+            {/*<Typography.Title heading={6}>Total</Typography.Title>*/}
             <Row>
+
+              {/*</Col>*/}
+              {/*<Divider type="vertical" className={styles.divider} />*/}
+              {/*<Col flex={1}>*/}
+              {/*  <StatisticItem*/}
+              {/*    // icon={<IconCalendar />}*/}
+              {/*    title={'Check In'}*/}
+              {/*    count={totalData?.totalCheckNum ?? ''}*/}
+              {/*    loading={false}*/}
+              {/*    unit={''}*/}
+              {/*  />*/}
+              {/*</Col>*/}
+
+              {/*<Divider type="vertical" className={styles.divider} />*/}
               <Col flex={1}>
                 <StatisticItem
                   // icon={<IconContent />}
-                  title={'Added WiFi'}
-                  count={totalData?.totalWiFiNum ?? ''}
+                  title={'Daily User growth'}
+                  count={todayData?.todayMemberNum ?? ''}
                   loading={false}
                   unit={''}
                 />
@@ -724,144 +730,133 @@ function Overview() {
               <Divider type="vertical" className={styles.divider} />
               <Col flex={1}>
                 <StatisticItem
-                  // icon={<IconCalendar />}
-                  title={'Check In'}
-                  count={totalData?.totalCheckNum ?? ''}
-                  loading={false}
-                  unit={''}
+                    // icon={<IconContent />}
+                    title={'Total Miners'}
+                    count={totalData?.totalWiFiNum ?? ''}
+                    loading={false}
+                    unit={''}
                 />
               </Col>
 
-              <Divider type="vertical" className={styles.divider} />
-              <Col flex={1}>
-                <StatisticItem
-                  // icon={<IconContent />}
-                  title={'App User'}
-                  count={totalData?.totalMemberNum ?? ''}
-                  loading={false}
-                  unit={''}
-                />
-              </Col>
-              <Divider type="vertical" className={styles.divider} />
+              {/*<Col flex={1}>*/}
+              {/*  <StatisticItem*/}
+              {/*    // icon={<IconContent />}*/}
+              {/*    title={'Issued mPoints'}*/}
+              {/*    count={totalData?.totalPointsNum ?? ''}*/}
+              {/*    loading={false}*/}
+              {/*    unit={''}*/}
+              {/*  />*/}
+              {/*</Col>*/}
+              {/*<Divider type="vertical" className={styles.divider} />*/}
 
-              <Col flex={1}>
-                <StatisticItem
-                  // icon={<IconContent />}
-                  title={'Issued mPoints'}
-                  count={totalData?.totalPointsNum ?? ''}
-                  loading={false}
-                  unit={''}
-                />
-              </Col>
-              <Divider type="vertical" className={styles.divider} />
+              {/*<Col flex={1}>*/}
+              {/*  <StatisticItem*/}
+              {/*      // icon={<IconContent />}*/}
+              {/*      title={'Issued Stickers'}*/}
+              {/*      count={totalData?.totalStickerNum ?? ''}*/}
+              {/*      loading={false}*/}
+              {/*      unit={''}*/}
+              {/*  />*/}
+              {/*</Col>*/}
+              {/*<Divider type="vertical" className={styles.divider} />*/}
 
-              <Col flex={1}>
-                <StatisticItem
-                  // icon={<IconContent />}
-                  title={'Issued Stickers'}
-                  count={totalData?.totalStickerNum ?? ''}
-                  loading={false}
-                  unit={''}
-                />
-              </Col>
-              <Divider type="vertical" className={styles.divider} />
+              {/*<Col flex={1}>*/}
+              {/*  <StatisticItem*/}
+              {/*      // icon={<IconContent />}*/}
+              {/*      title={'Heartbeat trading'}*/}
+              {/*      count={totalHeartbeat}*/}
+              {/*      loading={false}*/}
+              {/*      unit={''}*/}
+              {/*  />*/}
+              {/*</Col>*/}
+              {/*<Divider type="vertical" className={styles.divider} />*/}
 
-              <Col flex={1}>
-                <StatisticItem
-                  // icon={<IconContent />}
-                  title={'Heartbeat trading'}
-                  count={totalHeartbeat}
-                  loading={false}
-                  unit={''}
-                />
-              </Col>
-              <Divider type="vertical" className={styles.divider} />
+              {/*<Col flex={1}>*/}
+              {/*  <StatisticItem*/}
+              {/*      // icon={<IconContent />}*/}
+              {/*      title={'Nodes'}*/}
+              {/*      count={registerTotalCount}*/}
+              {/*      loading={false}*/}
+              {/*      unit={''}*/}
+              {/*  />*/}
+              {/*</Col>*/}
 
-              <Col flex={1}>
-                <StatisticItem
-                  // icon={<IconContent />}
-                  title={'Nodes'}
-                  count={registerTotalCount}
-                  loading={false}
-                  unit={''}
-                />
-              </Col>
             </Row>
           </Card>
         </Col>
       </Row>
-      <Row>
-        <Col span={24}>
-          <Card>
-            <Typography.Title heading={6}>Change of Today</Typography.Title>
-            <div>
-              <Row gutter={20}>
-                <Col flex={1}>
-                  <PublicOpinionCard
-                    key1={2}
-                    title={'Added WiFi'}
-                    count={todayData?.todayWiFiNum ?? ''}
-                    loading={false}
-                  />
-                </Col>
-                <Col flex={1}>
-                  <PublicOpinionCard
-                    key1={1}
-                    title={'Check In'}
-                    count={todayData?.todayCheckNum ?? ''}
-                    loading={false}
-                  />
-                </Col>
+      {/*<Row>*/}
+      {/*  <Col span={24}>*/}
+      {/*    <Card>*/}
+      {/*      <Typography.Title heading={6}>Change of Today</Typography.Title>*/}
+      {/*      <div>*/}
+      {/*        <Row gutter={20}>*/}
+      {/*          <Col flex={1}>*/}
+      {/*            <PublicOpinionCard*/}
+      {/*                key1={2}*/}
+      {/*                title={'Added WiFi'}*/}
+      {/*                count={todayData?.todayWiFiNum ?? ''}*/}
+      {/*                loading={false}*/}
+      {/*            />*/}
+      {/*          </Col>*/}
+      {/*          <Col flex={1}>*/}
+      {/*            <PublicOpinionCard*/}
+      {/*              key1={1}*/}
+      {/*              title={'Check In'}*/}
+      {/*              count={todayData?.todayCheckNum ?? ''}*/}
+      {/*              loading={false}*/}
+      {/*            />*/}
+      {/*          </Col>*/}
 
-                <Col flex={1}>
-                  <PublicOpinionCard
-                    key1={3}
-                    title={'App User'}
-                    count={todayData?.todayMemberNum ?? ''}
-                    loading={false}
-                  />
-                </Col>
-                <Col flex={1}>
-                  <PublicOpinionCard
-                    key1={4}
-                    title={'Issued mPoints'}
-                    count={todayData?.todayPointsNum ?? ''}
-                    loading={false}
-                  />
-                </Col>
-                <Col flex={1}>
-                  <PublicOpinionCard
-                    key1={5}
-                    title={'Issued Stickers'}
-                    count={todayData?.todayStickerNum ?? ''}
-                    loading={false}
-                  />
-                </Col>
-                <Col flex={1}>
-                  <PublicOpinionCard
-                    key1={6}
-                    title={'Heartbeat trading'}
-                    count={todayHeartbeat}
-                    loading={false}
-                  />
-                </Col>
-              </Row>
-            </div>
-          </Card>
-        </Col>
-      </Row>
+      {/*          <Col flex={1}>*/}
+      {/*            <PublicOpinionCard*/}
+      {/*              key1={3}*/}
+      {/*              title={'App User'}*/}
+      {/*              count={todayData?.todayMemberNum ?? ''}*/}
+      {/*              loading={false}*/}
+      {/*            />*/}
+      {/*          </Col>*/}
+      {/*          <Col flex={1}>*/}
+      {/*            <PublicOpinionCard*/}
+      {/*              key1={4}*/}
+      {/*              title={'Issued mPoints'}*/}
+      {/*              count={todayData?.todayPointsNum ?? ''}*/}
+      {/*              loading={false}*/}
+      {/*            />*/}
+      {/*          </Col>*/}
+      {/*          <Col flex={1}>*/}
+      {/*            <PublicOpinionCard*/}
+      {/*              key1={5}*/}
+      {/*              title={'Issued Stickers'}*/}
+      {/*              count={todayData?.todayStickerNum ?? ''}*/}
+      {/*              loading={false}*/}
+      {/*            />*/}
+      {/*          </Col>*/}
+      {/*          <Col flex={1}>*/}
+      {/*            <PublicOpinionCard*/}
+      {/*              key1={6}*/}
+      {/*              title={'Heartbeat trading'}*/}
+      {/*              count={todayHeartbeat}*/}
+      {/*              loading={false}*/}
+      {/*            />*/}
+      {/*          </Col>*/}
+      {/*        </Row>*/}
+      {/*      </div>*/}
+      {/*    </Card>*/}
+      {/*  </Col>*/}
+      {/*</Row>*/}
 
-      <Card>
-        <div className={'flex flex-row justify-between'}>
-          <div
-            ref={eChartsRef}
-            style={{
-              width: '100%',
-              height: 400,
-            }}
-          ></div>
-        </div>
-      </Card>
+      {/*<Card>*/}
+      {/*  <div className={'flex flex-row justify-between'}>*/}
+      {/*    <div*/}
+      {/*      ref={eChartsRef}*/}
+      {/*      style={{*/}
+      {/*        width: '100%',*/}
+      {/*        height: 400,*/}
+      {/*      }}*/}
+      {/*    ></div>*/}
+      {/*  </div>*/}
+      {/*</Card>*/}
       <Card>
         <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
           <Select
@@ -869,7 +864,7 @@ function Overview() {
             style={{ width: 100 }}
             size={'large'}
             bordered={false}
-            defaultValue={'day'}
+            defaultValue={'month'}
             onChange={(value) => setDate1(value)}
           >
             {optionsDate.map((option, index) => (
@@ -887,129 +882,129 @@ function Overview() {
           }}
         ></div>
       </Card>
+      {/*<Card>*/}
+      {/*  <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>*/}
+      {/*    /!*<Select*!/*/}
+      {/*    /!*    // placeholder='Day'*!/*/}
+      {/*    /!*    style={{ width: 100 }}*!/*/}
+      {/*    /!*    size={'large'}*!/*/}
+      {/*    /!*    bordered={false}*!/*/}
+      {/*    /!*    defaultValue={'month'}*!/*/}
+      {/*    /!*    onChange={(value) => setDate2(value)}*!/*/}
+      {/*    /!*>*!/*/}
+      {/*    /!*  {optionsDate.map((option, index) => (*!/*/}
+      {/*    /!*      <Option key={index} value={option.code}>*!/*/}
+      {/*    /!*        {option.name}*!/*/}
+      {/*    /!*      </Option>*!/*/}
+      {/*    /!*  ))}*!/*/}
+      {/*    /!*</Select>*!/*/}
+      {/*  </div>*/}
+      {/*  <div*/}
+      {/*      ref={eChartsRef2}*/}
+      {/*      style={{*/}
+      {/*        width: '100%',*/}
+      {/*        height: 500,*/}
+      {/*      }}*/}
+      {/*  ></div>*/}
+      {/*</Card>*/}
+      {/*<Card>*/}
+      {/*  <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>*/}
+      {/*    <Select*/}
+      {/*      // placeholder='Day'*/}
+      {/*        style={{ width: 100 }}*/}
+      {/*        size={'large'}*/}
+      {/*      bordered={false}*/}
+      {/*      defaultValue={'month'}*/}
+      {/*      onChange={(value) => setDate3(value)}*/}
+      {/*    >*/}
+      {/*      {optionsDate.map((option, index) => (*/}
+      {/*        <Option key={index} value={option.code}>*/}
+      {/*          {option.name}*/}
+      {/*        </Option>*/}
+      {/*      ))}*/}
+      {/*    </Select>*/}
+      {/*  </div>*/}
+      {/*  <div*/}
+      {/*    ref={eChartsRef3}*/}
+      {/*    style={{*/}
+      {/*      width: '100%',*/}
+      {/*      height: 500,*/}
+      {/*    }}*/}
+      {/*  ></div>*/}
+      {/*</Card>*/}
+      {/*<Card>*/}
+      {/*  <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>*/}
+      {/*    <Select*/}
+      {/*        // placeholder='Day'*/}
+      {/*        style={{ width: 100 }}*/}
+      {/*        size={'large'}*/}
+      {/*        bordered={false}*/}
+      {/*        defaultValue={'month'}*/}
+      {/*        onChange={(value) => setDate4(value)}*/}
+      {/*    >*/}
+      {/*      {optionsDate.map((option, index) => (*/}
+      {/*          <Option key={index} value={option.code}>*/}
+      {/*            {option.name}*/}
+      {/*          </Option>*/}
+      {/*      ))}*/}
+      {/*    </Select>*/}
+      {/*  </div>*/}
+      {/*  <div*/}
+      {/*      ref={eChartsRef4}*/}
+      {/*      style={{*/}
+      {/*        width: '100%',*/}
+      {/*        height: 500,*/}
+      {/*      }}*/}
+      {/*  ></div>*/}
+      {/*</Card>*/}
       <Card>
         <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
-          {/*<Select*/}
-          {/*    // placeholder='Day'*/}
-          {/*    style={{ width: 100 }}*/}
-          {/*    size={'large'}*/}
-          {/*    bordered={false}*/}
-          {/*    defaultValue={'day'}*/}
-          {/*    onChange={(value) => setDate2(value)}*/}
-          {/*>*/}
-          {/*  {optionsDate.map((option, index) => (*/}
-          {/*      <Option key={index} value={option.code}>*/}
-          {/*        {option.name}*/}
-          {/*      </Option>*/}
-          {/*  ))}*/}
-          {/*</Select>*/}
+          <Select
+              // placeholder='Day'
+              style={{ width: 100 }}
+              size={'large'}
+              bordered={false}
+              defaultValue={'month'}
+              onChange={(value) => setDate5(value)}
+          >
+            {optionsDate.map((option, index) => (
+                <Option key={index} value={option.code}>
+                  {option.name}
+                </Option>
+            ))}
+          </Select>
         </div>
         <div
-          ref={eChartsRef2}
-          style={{
-            width: '100%',
-            height: 500,
-          }}
+            ref={eChartsRef5}
+            style={{
+              width: '100%',
+              height: 500,
+            }}
         ></div>
       </Card>
       <Card>
         <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
           <Select
-            // placeholder='Day'
-            style={{ width: 100 }}
-            size={'large'}
-            bordered={false}
-            defaultValue={'day'}
-            onChange={(value) => setDate3(value)}
+              // placeholder='Day'
+              style={{ width: 100 }}
+              size={'large'}
+              bordered={false}
+              defaultValue={'month'}
+              onChange={(value) => setDate6(value)}
           >
             {optionsDate.map((option, index) => (
-              <Option key={index} value={option.code}>
-                {option.name}
-              </Option>
+                <Option key={index} value={option.code}>
+                  {option.name}
+                </Option>
             ))}
           </Select>
         </div>
         <div
-          ref={eChartsRef3}
-          style={{
-            width: '100%',
-            height: 500,
-          }}
-        ></div>
-      </Card>
-      <Card>
-        <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
-          <Select
-            // placeholder='Day'
-            style={{ width: 100 }}
-            size={'large'}
-            bordered={false}
-            defaultValue={'day'}
-            onChange={(value) => setDate4(value)}
-          >
-            {optionsDate.map((option, index) => (
-              <Option key={index} value={option.code}>
-                {option.name}
-              </Option>
-            ))}
-          </Select>
-        </div>
-        <div
-          ref={eChartsRef4}
-          style={{
-            width: '100%',
-            height: 500,
-          }}
-        ></div>
-      </Card>
-      <Card>
-        <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
-          <Select
-            // placeholder='Day'
-            style={{ width: 100 }}
-            size={'large'}
-            bordered={false}
-            defaultValue={'day'}
-            onChange={(value) => setDate5(value)}
-          >
-            {optionsDate.map((option, index) => (
-              <Option key={index} value={option.code}>
-                {option.name}
-              </Option>
-            ))}
-          </Select>
-        </div>
-        <div
-          ref={eChartsRef5}
-          style={{
-            width: '100%',
-            height: 500,
-          }}
-        ></div>
-      </Card>
-      <Card>
-        <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
-          <Select
-            // placeholder='Day'
-            style={{ width: 100 }}
-            size={'large'}
-            bordered={false}
-            defaultValue={'day'}
-            onChange={(value) => setDate6(value)}
-          >
-            {optionsDate.map((option, index) => (
-              <Option key={index} value={option.code}>
-                {option.name}
-              </Option>
-            ))}
-          </Select>
-        </div>
-        <div
-          ref={eChartsRef6}
-          style={{
-            width: '100%',
-            height: 500,
-          }}
+            ref={eChartsRef6}
+            style={{
+              width: '100%',
+              height: 500,
+            }}
         ></div>
       </Card>
     </Space>
