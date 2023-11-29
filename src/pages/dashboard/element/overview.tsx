@@ -30,12 +30,8 @@ const ApoClient = new ApolloClient({
 const { Row, Col } = Grid;
 const { Title } = Typography;
 const Option = Select.Option;
-const timestamp = Date.parse(Date())/1000;
-
 const TimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 function Overview() {
-  console.log('timestamp',timestamp);
-
   const t = useLocale(locale);
   // const eChartsRef: any = React.createRef();
   const [todayData, setTodayData] = useState<any>({});
@@ -43,12 +39,12 @@ function Overview() {
   const [totalData, setTotalData] = useState<any>({});
   const [totalHeartbeat, setTotalHeartbeat] = useState<any>('');
   const [registerTotalCount, setRegisterTotalCount] = useState('');
-  const [date1, setDate1] = useState<'month' | 'week' | 'day'>('month');
-  const [date2, setDate2] = useState<'month' | 'week' | 'day'>('month');
-  const [date3, setDate3] = useState<'month' | 'week' | 'day'>('month');
-  const [date4, setDate4] = useState<'month' | 'week' | 'day'>('month');
-  const [date5, setDate5] = useState<'month' | 'week' | 'day'>('month');
-  const [date6, setDate6] = useState<'month' | 'week' | 'day'>('month');
+  const [date1, setDate1] = useState<string>('month');
+  const [date2, setDate2] = useState<string>('month');
+  const [date3, setDate3] = useState<string>('month');
+  const [date4, setDate4] = useState<string>('month');
+  const [date5, setDate5] = useState<string>('month');
+  const [date6, setDate6] = useState<string>('month');
   const [data1, setData1] = useState<any>({});
   const [data2, setData2] = useState<any>({});
   const [data3, setData3] = useState<any>({});
@@ -186,10 +182,11 @@ function Overview() {
     });
   };
 
-  const fetchChartData = (type = 1) => {
+  const fetchChartData = (type = 1,dateeee = 'month') => {
     if(type === 1){
+      setDate1(dateeee);
       ChartGroup({
-        group: date1,
+        group: dateeee,
         loc:TimeZone
         // loc:(0 - new Date().getTimezoneOffset() / 60)
       }).then((res) => {
@@ -214,8 +211,10 @@ function Overview() {
     //   });
     // }
     else if(type === 3){
+      setDate3(dateeee);
+
       ChartGroup({
-        group: date3,
+        group: dateeee,
         loc:TimeZone
         // loc:(0 - new Date().getTimezoneOffset() / 60)
       }).then((res) => {
@@ -227,8 +226,10 @@ function Overview() {
       });
     }
     else if(type === 4){
+      setDate4(dateeee);
+
       ChartGroup({
-        group: date4,
+        group: dateeee,
         loc:TimeZone
         // loc:(0 - new Date().getTimezoneOffset() / 60)
       }).then((res) => {
@@ -240,8 +241,10 @@ function Overview() {
       });
     }
     else if(type === 5){
+      setDate5(dateeee);
+
       ChartGroup({
-        group: date5,
+        group: dateeee,
         loc:TimeZone
         // loc:(0 - new Date().getTimezoneOffset() / 60)
       }).then((res) => {
@@ -253,8 +256,10 @@ function Overview() {
       });
     }
     else if(type === 6){
+      setDate6(dateeee);
+
       ChartGroup({
-        group: date6,
+        group: dateeee,
         loc:TimeZone
         // loc:(0 - new Date().getTimezoneOffset() / 60)
       }).then((res) => {
@@ -654,24 +659,24 @@ function Overview() {
   useEffect(() => {
     initChart6();
   }, [data6]);
-  useEffect(() => {
-      fetchChartData(1);
-  }, [date1]);
-  useEffect(() => {
-    fetchChartData(2);
-  }, [date2]);
-  useEffect(() => {
-    fetchChartData(3);
-  }, [date3]);
-  useEffect(() => {
-    fetchChartData(4);
-  }, [date4]);
-  useEffect(() => {
-    fetchChartData(5);
-  }, [date5]);
-  useEffect(() => {
-    fetchChartData(6);
-  }, [date6]);
+  // useEffect(() => {
+  //     fetchChartData(1);
+  // }, [date1]);
+  // useEffect(() => {
+  //   fetchChartData(2);
+  // }, [date2]);
+  // useEffect(() => {
+  //   fetchChartData(3);
+  // }, [date3]);
+  // useEffect(() => {
+  //   fetchChartData(4);
+  // }, [date4]);
+  // useEffect(() => {
+  //   fetchChartData(5);
+  // }, [date5]);
+  // useEffect(() => {
+  //   fetchChartData(6);
+  // }, [date6]);
   useEffect(() => {
     // const password = '@#dappley792&*'
     // const password = 'dappley792'
@@ -874,7 +879,7 @@ function Overview() {
             size={'large'}
             bordered={false}
             defaultValue={'month'}
-            onChange={(value) => setDate1(value)}
+            onChange={(value) => fetchChartData(1,value)}
           >
             {optionsDate.map((option, index) => (
               <Option key={index} value={option.code}>
@@ -924,7 +929,7 @@ function Overview() {
               size={'large'}
             bordered={false}
             defaultValue={'month'}
-            onChange={(value) => setDate3(value)}
+            onChange={(value) => fetchChartData(3,value)}
           >
             {optionsDate.map((option, index) => (
               <Option key={index} value={option.code}>
@@ -949,7 +954,7 @@ function Overview() {
               size={'large'}
               bordered={false}
               defaultValue={'month'}
-              onChange={(value) => setDate4(value)}
+              onChange={(value) => fetchChartData(4,value)}
           >
             {optionsDate.map((option, index) => (
                 <Option key={index} value={option.code}>
@@ -974,7 +979,7 @@ function Overview() {
               size={'large'}
               bordered={false}
               defaultValue={'month'}
-              onChange={(value) => setDate5(value)}
+              onChange={(value) => fetchChartData(5,value)}
           >
             {optionsDate.map((option, index) => (
                 <Option key={index} value={option.code}>
@@ -999,7 +1004,7 @@ function Overview() {
               size={'large'}
               bordered={false}
               defaultValue={'month'}
-              onChange={(value) => setDate6(value)}
+              onChange={(value) => fetchChartData(6,value)}
           >
             {optionsDate.map((option, index) => (
                 <Option key={index} value={option.code}>
