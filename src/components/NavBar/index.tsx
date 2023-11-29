@@ -87,14 +87,11 @@ function Navbar({ show }: { show: boolean }) {
         </div>
       </div>
       <ul className={styles.right}>
-        <Settings />
           <li>
-              <Link href={`/dashboard`}>
-                  <div>
-                      <IconSettings className={styles['dropdown-icon']} />
-                      {t['label.personalCenter.settings']}
-                  </div>
-              </Link>
+              <Link href={`/dashboard`}>dashboard</Link>
+          </li>
+          <li>
+              <Link href={`https://explorer.metablox.io/staking/#/staking`}>staking</Link>
           </li>
       </ul>
     </div>

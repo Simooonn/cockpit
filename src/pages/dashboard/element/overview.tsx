@@ -30,10 +30,12 @@ const ApoClient = new ApolloClient({
 const { Row, Col } = Grid;
 const { Title } = Typography;
 const Option = Select.Option;
+const timestamp = Date.parse(Date())/1000;
 
 const TimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-
 function Overview() {
+  console.log('timestamp',timestamp);
+
   const t = useLocale(locale);
   // const eChartsRef: any = React.createRef();
   const [todayData, setTodayData] = useState<any>({});
@@ -656,19 +658,19 @@ function Overview() {
       fetchChartData(1);
   }, [date1]);
   useEffect(() => {
-      fetchChartData(2);
+    fetchChartData(2);
   }, [date2]);
   useEffect(() => {
-      fetchChartData(3);
+    fetchChartData(3);
   }, [date3]);
   useEffect(() => {
-      fetchChartData(4);
+    fetchChartData(4);
   }, [date4]);
   useEffect(() => {
-      fetchChartData(5);
+    fetchChartData(5);
   }, [date5]);
   useEffect(() => {
-      fetchChartData(6);
+    fetchChartData(6);
   }, [date6]);
   useEffect(() => {
     // const password = '@#dappley792&*'
@@ -860,6 +862,8 @@ function Overview() {
       {/*  </div>*/}
       {/*</Card>*/}
       <Card>
+        <div className={styles.title} style={{fontSize:'18px',fontWeight:'bold'}}>Miner Map</div>
+
         <App></App>
       </Card>
       <Card>

@@ -19,6 +19,8 @@ import {
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Image from 'next/image';
+
 import qs from 'query-string';
 import Navbar from '../components/NavBar';
 import Footer from '../components/Footer';
@@ -28,6 +30,7 @@ import { GlobalState } from '@/store';
 import getUrlParams from '@/utils/getUrlParams';
 import styles from '@/style/layout.module.less';
 import NoAccess from '@/pages/exception/403';
+import Workplace from "@/pages/dashboard";
 
 const MenuItem = Menu.Item;
 const SubMenu = Menu.SubMenu;
@@ -122,50 +125,54 @@ function PageLayout({ children }: { children: ReactNode }) {
     routeMap.current.clear();
     return function travel(_routes: IRoute[], level, parentNode = []) {
       return _routes.map((route) => {
-        const { breadcrumb = true, ignore } = route;
-        const iconDom = getIconFromKey(route.key);
-        const titleDom = (
-          <>
-            {iconDom} {locale[route.name] || route.name}
-          </>
-        );
-
         routeMap.current.set(
-          `/${route.key}`,
-          breadcrumb ? [...parentNode, route.name] : []
+            `/${route.key}`,
+            breadcrumb ? [...parentNode, route.name] : []
         );
-
-        const visibleChildren = (route.children || []).filter((child) => {
-          const { ignore, breadcrumb = true } = child;
-          if (ignore || route.ignore) {
-            routeMap.current.set(
-              `/${child.key}`,
-              breadcrumb ? [...parentNode, route.name, child.name] : []
-            );
-          }
-
-          return !ignore;
-        });
-
-        if (ignore) {
-          return '';
-        }
-        if (visibleChildren.length) {
-          menuMap.current.set(route.key, { subMenu: true });
-          return (
-            <SubMenu key={route.key} title={titleDom}>
-              {travel(visibleChildren, level + 1, [...parentNode, route.name])}
-            </SubMenu>
-          );
-        }
-        menuMap.current.set(route.key, { menuItem: true });
-        return (
-          <MenuItem key={route.key}>
-            <Link href={`/${route.key}`}>
-              <a>{titleDom}</a>
-            </Link>
-          </MenuItem>
-        );
+        // const { breadcrumb = true, ignore } = route;
+        // const iconDom = getIconFromKey(route.key);
+        // const titleDom = (
+        //   <>
+        //     {iconDom} {locale[route.name] || route.name}
+        //   </>
+        // );
+        //
+        // routeMap.current.set(
+        //   `/${route.key}`,
+        //   breadcrumb ? [...parentNode, route.name] : []
+        // );
+        //
+        // const visibleChildren = (route.children || []).filter((child) => {
+        //   const { ignore, breadcrumb = true } = child;
+        //   if (ignore || route.ignore) {
+        //     routeMap.current.set(
+        //       `/${child.key}`,
+        //       breadcrumb ? [...parentNode, route.name, child.name] : []
+        //     );
+        //   }
+        //
+        //   return !ignore;
+        // });
+        //
+        // if (ignore) {
+        //   return '';
+        // }
+        // if (visibleChildren.length) {
+        //   menuMap.current.set(route.key, { subMenu: true });
+        //   return (
+        //     <SubMenu key={route.key} title={titleDom}>
+        //       {travel(visibleChildren, level + 1, [...parentNode, route.name])}
+        //     </SubMenu>
+        //   );
+        // }
+        // menuMap.current.set(route.key, { menuItem: true });
+        // return (
+        //   <MenuItem key={route.key}>
+        //     <Link href={`/${route.key}`}>
+        //       <a>{titleDom}</a>
+        //     </Link>
+        //   </MenuItem>
+        // );
       });
     };
   }
@@ -190,6 +197,11 @@ function PageLayout({ children }: { children: ReactNode }) {
     setOpenKeys(newOpenKeys);
   }
 
+  const goToUrl = (url = '') => {
+    window.location.href = url
+    return
+  }
+
   useEffect(() => {
     const routeConfig = routeMap.current.get(pathname);
     setBreadCrumb(routeConfig || []);
@@ -203,61 +215,49 @@ function PageLayout({ children }: { children: ReactNode }) {
           [styles['layout-navbar-hidden']]: !showNavbar,
         })}
       >
-        <Navbar show={showNavbar} />
+        <header className={styles.aa1}>
+          <div style={{cursor:'pointer'}}>
+            <Image className={styles['aa1-logo']} width={235} height={60} src={'/logo-dark.png'} alt="logo" />
+            </div>
+          <div className={styles['aa1-nav-container']}>
+            <div>
+              <ul className={styles['aa1-nav-tab']}>
+                <li  className={styles['aa1-nav-tab-li-active']}>Dashboard</li>
+                <li className={styles['aa1-nav-tab-li']} onClick={()=>goToUrl('https://explorer.metablox.io/staking/#/staking')}>Staking</li>
+                <li className={styles['aa1-nav-tab-li']} onClick={()=>goToUrl('https://explorer.metablox.io/nft/')}>Ranking</li>
+                <li className={styles['aa1-nav-tab-li']} onClick={()=>goToUrl('https://explorer.metablox.io/nft/mynft')}>My NFT</li>
+              </ul>
+            </div>
+          </div>
+          <div className="opeartor-container">
+            <div className="opeartor base-color">Connect</div>
+          </div>
+        </header>
+        {/*<Navbar show={showNavbar} />*/}
       </div>
       {userLoading ? (
         <Spin className={styles['spin']} />
       ) : (
         <Layout>
-          {showMenu && (
-            <Sider
-              className={styles['layout-sider']}
-              width={menuWidth}
-              collapsed={collapsed}
-              onCollapse={setCollapsed}
-              trigger={null}
-              collapsible
-              breakpoint="xl"
-              style={paddingTop}
-            >
-              <div className={styles['menu-wrapper']}>
-                <Menu
-                  collapse={collapsed}
-                  onClickMenuItem={onClickMenuItem}
-                  selectedKeys={selectedKeys}
-                  openKeys={openKeys}
-                  onClickSubMenu={(_, openKeys) => {
-                    // setOpenKeys(openKeys);
-                    setOpenKeys([
-                      openKeys[
-                        openKeys.length - 1 < 0 ? 0 : openKeys.length - 1
-                      ],
-                    ]);
-                  }}
-                >
-                  {renderRoutes(locale)(routes, 1)}
-                </Menu>
-              </div>
-              <div className={styles['collapse-btn']} onClick={toggleCollapse}>
-                {collapsed ? <IconMenuUnfold /> : <IconMenuFold />}
-              </div>
-            </Sider>
-          )}
-          <Layout className={styles['layout-content']} style={paddingStyle}>
+          {renderRoutes(locale)(routes, 1)}
+          <Layout className={styles['layout-content']}>
             <div className={styles['layout-content-wrapper']}>
               {!!breadcrumb.length && (
                 <div className={styles['layout-breadcrumb']}>
-                  <Breadcrumb>
-                    {breadcrumb.map((node, index) => (
-                      <Breadcrumb.Item key={index}>
-                        {typeof node === 'string' ? locale[node] || node : node}
-                      </Breadcrumb.Item>
-                    ))}
-                  </Breadcrumb>
+
+                  {/*<Breadcrumb>*/}
+                  {/*  {breadcrumb.map((node, index) => (*/}
+                  {/*    <Breadcrumb.Item key={index}>*/}
+                  {/*      {typeof node === 'string' ? locale[node] || node : node}*/}
+                  {/*    </Breadcrumb.Item>*/}
+                  {/*  ))}*/}
+                  {/*</Breadcrumb>*/}
                 </div>
               )}
-              <Content>
-                {routeMap.current.has(pathname) ? children : <NoAccess />}
+
+              <Content  className={styles['layout-content1']}>
+
+                {routeMap.current.has(pathname) ? children : <Workplace/>}
               </Content>
             </div>
             {showFooter && <Footer />}

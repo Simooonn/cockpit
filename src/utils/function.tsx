@@ -297,7 +297,7 @@ export function api_url() {
   if (typeof window !== 'undefined') {
     let wUrl;
     const port = window.location.port;
-    if (window.location.origin.indexOf('cockpit.metablox.io') != -1) {
+    if (window.location.origin.indexOf('explorer.metablox.io') != -1) {
       if (port == '80' || port == '443' || port == '') {
         //prod
         wUrl = 'https://api.metablox.io';
