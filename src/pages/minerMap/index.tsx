@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import GoogleMapReact from 'google-map-react';
 import styles from '@/pages/minerMap/index.module.less';
 import {Image as ArcoImage, Message, Popconfirm, Typography} from '@arco-design/web-react';
-import { getMinerMapData } from '@/utils/function';
+import {getMinerMapData, setMinerMapData} from '@/utils/function';
 import HealthMetabloxOffline from '@/assets/miner/health-metablox-offline.png';
 import HealthMetabloxPremium from '@/assets/miner/health-metablox-premium.png';
 import HealthWifiHigh from '@/assets/miner/health-wifi-high.png';
@@ -16,6 +16,7 @@ import ImgSsid from '@/assets/miner/ssid.png';
 import {MarkerClusterer} from "@googlemaps/markerclusterer";
 import {Cluster} from "@googlemaps/markerclusterer/dist/cluster";
 import {ClusterStats} from "@googlemaps/markerclusterer/dist/renderer";
+import {minerMapView} from "@/request/api";
 const { Text } = Typography;
 
 const HealthOption = {
@@ -215,7 +216,6 @@ const initMinerMapData = (data: any) => {
 
 
 const App = () => {
-  const data = initMinerMapData(getMinerMapData());
   const [isInfoWindowOpen, setIsInfoWindowOpen] = useState(false);
   const [minerInfo, setMinerInfo] = useState({});
 
@@ -226,13 +226,45 @@ const App = () => {
     return {
       mapId: '1075f7ed7a304773',
       minZoom: 2,
+      fullscreenControl:false,
     };
   };
 
+  const initMapData = async () => {
+    //init miner map data
+    const formData = {
+      latitude: 0,
+      longitude: 0,
+      page: 1,
+      size: 1000,
+    }
+    let data = [];
+    const res = await minerMapView(formData);
+    if (res?.code !== 200) {
+      Message.error(res?.code);
+      return false;
+    }
+    data = res?.data?.list??[]
+    const totalPageNum = Math.ceil(res?.data?.total/formData.size)
+    if(totalPageNum > 1){
+      for (let i = 2; i <= totalPageNum; i++) {
+        const re0 = await minerMapView({...formData,page:i});
+        if (re0?.code !== 200) {
+          Message.error(re0?.code);
+          return false;
+        }
+        data = [...data,...(re0?.data?.list??[])]
+      }
+    }
+    setMinerMapData(data);
 
-  const initMarkers = async ({map,maps}) => {
+    return data
+  }
+
+
+  const initMarkers = async ({mapData,map,maps}) => {
     // Add some markers to the map.
-    const markers = data.map( (miner, i) => {
+    const markers = initMinerMapData(mapData)?.map( (miner, i) => {
       const position = {
         lat: miner?.lat ?? 0, lng: miner?.lng ?? 0
       }
@@ -364,9 +396,6 @@ const App = () => {
   }
 
   useEffect(() => {
-    console.log('map data total',data?.length);
-    console.log('process.env.NEXT_GOOGLE_MAP_API_KEY',process.env.NEXT_GOOGLE_MAP_API_KEY);
-
     // fetchMapMarkers();
   }, []);
 
@@ -391,10 +420,12 @@ const App = () => {
           zoom={2}
           center={{ lat: 42.8566, lng: 2.3522 }}
           yesIWantToUseGoogleMapApiInternals
-          onGoogleApiLoaded={({ map,maps }) => {
+          onGoogleApiLoaded={ async ({ map,maps }) => {
             mapRef.current = map;
             createMyLocationButton({map:map,maps:maps})
-            initMarkers({map:map,maps:maps})
+
+            const MapData = await initMapData()
+            initMarkers({mapData:MapData,map:map,maps:maps})
           }}
           options={createMapOptions}
         >

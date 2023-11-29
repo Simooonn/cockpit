@@ -21,6 +21,7 @@ import {
 import styles from '@/pages/dashboard/style/overview.module.less';
 import {array_column, getDay, getToken, setJWTToken, setMinerMapData, setToken} from "@/utils/function";
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import App  from "@/pages/minerMap";
 const ApoApiURL = 'https://api.thegraph.com/subgraphs/name/simooonn/metablox-cockpit';
 const ApoClient = new ApolloClient({
   uri: ApoApiURL,
@@ -54,8 +55,8 @@ function Overview() {
   const [data6, setData6] = useState<any>({});
   const eChartsRef1: any = React.createRef();
   // const eChartsRef2: any = React.createRef();
-  // const eChartsRef3: any = React.createRef();
-  // const eChartsRef4: any = React.createRef();
+  const eChartsRef3: any = React.createRef();
+  const eChartsRef4: any = React.createRef();
   const eChartsRef5: any = React.createRef();
   const eChartsRef6: any = React.createRef();
 
@@ -433,37 +434,37 @@ function Overview() {
   //   myChart.setOption(initLineOption( "rgb(124, 255, 178)",'Heartbeat trading Growth Quantity','Heartbeat trading',xData,yData))
   // };
   //
-  // const initChart3 = () => {
-  //   let nnum = data3?.memberBase
-  //   const myChart = eCharts.init(eChartsRef3.current, 'dark', {
-  //     renderer: 'svg',
-  //   });
-  //
-  //   const xData =  (data3?.time ?? [])?.map(ittt=>{
-  //     return dateConversion(ittt,date3)
-  //   })
-  //   const yData = (data3?.member ?? [])?.map(ittt=>{
-  //     nnum = nnum + ittt
-  //     return nnum
-  //   })
-  //   myChart.setOption(initLineOption( "rgb(253, 221, 96)",'Accumulated number of App User','App User',xData,yData))
-  // };
-  //
-  // const initChart4 = () => {
-  //   let nnum = data4?.wiFiBase
-  //   const myChart = eCharts.init(eChartsRef4.current, 'dark', {
-  //     renderer: 'svg',
-  //   });
-  //
-  //   const xData = (data4?.time ?? [])?.map(ittt=>{
-  //     return dateConversion(ittt,date4)
-  //   })
-  //   const yData = (data4?.wifi ?? [])?.map(ittt=>{
-  //     nnum = nnum + ittt
-  //     return nnum
-  //   })
-  //   myChart.setOption(initLineOption( "rgb(255, 110, 118)",'Accumulated number of New Added WiFi','New Added WiFi',xData,yData))
-  // };
+  const initChart3 = () => {
+    let nnum = data3?.memberBase
+    const myChart = eCharts.init(eChartsRef3.current, 'dark', {
+      renderer: 'svg',
+    });
+
+    const xData =  (data3?.time ?? [])?.map(ittt=>{
+      return dateConversion(ittt,date3)
+    })
+    const yData = (data3?.member ?? [])?.map(ittt=>{
+      nnum = nnum + ittt
+      return nnum
+    })
+    myChart.setOption(initLineOption( "rgb(253, 221, 96)",'Accumulated number of App User','App User',xData,yData))
+  };
+
+  const initChart4 = () => {
+    let nnum = data4?.wiFiBase
+    const myChart = eCharts.init(eChartsRef4.current, 'dark', {
+      renderer: 'svg',
+    });
+
+    const xData = (data4?.time ?? [])?.map(ittt=>{
+      return dateConversion(ittt,date4)
+    })
+    const yData = (data4?.wifi ?? [])?.map(ittt=>{
+      nnum = nnum + ittt
+      return nnum
+    })
+    myChart.setOption(initLineOption( "rgb(255, 110, 118)",'Accumulated number of New Added WiFi','New Added WiFi',xData,yData))
+  };
 
   const initChart5 = () => {
     let nnum = data5?.pointBase
@@ -524,6 +525,7 @@ function Overview() {
       }
     }
     setMinerMapData(data);
+    return true
   }
 
   const getHeartbeatTotalCount = async () => {
@@ -638,12 +640,12 @@ function Overview() {
   // useEffect(() => {
   //   initChart2();
   // }, [data2]);
-  // useEffect(() => {
-  //   initChart3();
-  // }, [data3]);
-  // useEffect(() => {
-  //   initChart4();
-  // }, [data4]);
+  useEffect(() => {
+    initChart3();
+  }, [data3]);
+  useEffect(() => {
+    initChart4();
+  }, [data4]);
   useEffect(() => {
     initChart5();
   }, [data5]);
@@ -651,46 +653,36 @@ function Overview() {
     initChart6();
   }, [data6]);
   useEffect(() => {
-    if(getToken()){
       fetchChartData(1);
-    }
   }, [date1]);
   useEffect(() => {
-    if(getToken()){
       fetchChartData(2);
-    }
   }, [date2]);
   useEffect(() => {
-    if(getToken()){
       fetchChartData(3);
-    }
   }, [date3]);
   useEffect(() => {
-    if(getToken()){
       fetchChartData(4);
-    }
   }, [date4]);
   useEffect(() => {
-    if(getToken()){
       fetchChartData(5);
-    }
   }, [date5]);
   useEffect(() => {
-    if(getToken()){
       fetchChartData(6);
-    }
   }, [date6]);
   useEffect(() => {
-    userLogin({ username: 'admin', password: '@#dappley792&*' }).then(
-        async (res) => {
-          const { code, msg, data } = res;
-          if (code == 200) {
-            setToken(data?.token);
+    // const password = '@#dappley792&*'
+    // const password = 'dappley792'
+    // userLogin({ username: 'admin', password: password }).then(
+    //     async (res) => {
+    //       const { code, msg, data } = res;
+    //       if (code == 200) {
+    //         setToken(data?.token);
             fetchData();
-            initMapData()
-          }
-        }
-    );
+            // initMapData()
+    //       }
+    //     }
+    // );
     // getHeartbeatTotalCount()
     // getTodayHeartbeat()
     // getRegisterTotalCount()
@@ -728,6 +720,16 @@ function Overview() {
                 />
               </Col>
               <Divider type="vertical" className={styles.divider} />
+              {/*<Col flex={1}>*/}
+              {/*  <StatisticItem*/}
+              {/*      // icon={<IconContent />}*/}
+              {/*      title={'Total Added WiFi'}*/}
+              {/*      count={totalData?.totalWiFiNum ?? ''}*/}
+              {/*      loading={false}*/}
+              {/*      unit={''}*/}
+              {/*  />*/}
+              {/*</Col>*/}
+              {/*<Divider type="vertical" className={styles.divider} />*/}
               <Col flex={1}>
                 <StatisticItem
                     // icon={<IconContent />}
@@ -858,6 +860,9 @@ function Overview() {
       {/*  </div>*/}
       {/*</Card>*/}
       <Card>
+        <App></App>
+      </Card>
+      <Card>
         <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
           <Select
             // placeholder='Day'
@@ -907,56 +912,56 @@ function Overview() {
       {/*      }}*/}
       {/*  ></div>*/}
       {/*</Card>*/}
-      {/*<Card>*/}
-      {/*  <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>*/}
-      {/*    <Select*/}
-      {/*      // placeholder='Day'*/}
-      {/*        style={{ width: 100 }}*/}
-      {/*        size={'large'}*/}
-      {/*      bordered={false}*/}
-      {/*      defaultValue={'month'}*/}
-      {/*      onChange={(value) => setDate3(value)}*/}
-      {/*    >*/}
-      {/*      {optionsDate.map((option, index) => (*/}
-      {/*        <Option key={index} value={option.code}>*/}
-      {/*          {option.name}*/}
-      {/*        </Option>*/}
-      {/*      ))}*/}
-      {/*    </Select>*/}
-      {/*  </div>*/}
-      {/*  <div*/}
-      {/*    ref={eChartsRef3}*/}
-      {/*    style={{*/}
-      {/*      width: '100%',*/}
-      {/*      height: 500,*/}
-      {/*    }}*/}
-      {/*  ></div>*/}
-      {/*</Card>*/}
-      {/*<Card>*/}
-      {/*  <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>*/}
-      {/*    <Select*/}
-      {/*        // placeholder='Day'*/}
-      {/*        style={{ width: 100 }}*/}
-      {/*        size={'large'}*/}
-      {/*        bordered={false}*/}
-      {/*        defaultValue={'month'}*/}
-      {/*        onChange={(value) => setDate4(value)}*/}
-      {/*    >*/}
-      {/*      {optionsDate.map((option, index) => (*/}
-      {/*          <Option key={index} value={option.code}>*/}
-      {/*            {option.name}*/}
-      {/*          </Option>*/}
-      {/*      ))}*/}
-      {/*    </Select>*/}
-      {/*  </div>*/}
-      {/*  <div*/}
-      {/*      ref={eChartsRef4}*/}
-      {/*      style={{*/}
-      {/*        width: '100%',*/}
-      {/*        height: 500,*/}
-      {/*      }}*/}
-      {/*  ></div>*/}
-      {/*</Card>*/}
+      <Card>
+        <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
+          <Select
+            // placeholder='Day'
+              style={{ width: 100 }}
+              size={'large'}
+            bordered={false}
+            defaultValue={'month'}
+            onChange={(value) => setDate3(value)}
+          >
+            {optionsDate.map((option, index) => (
+              <Option key={index} value={option.code}>
+                {option.name}
+              </Option>
+            ))}
+          </Select>
+        </div>
+        <div
+          ref={eChartsRef3}
+          style={{
+            width: '100%',
+            height: 500,
+          }}
+        ></div>
+      </Card>
+      <Card>
+        <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
+          <Select
+              // placeholder='Day'
+              style={{ width: 100 }}
+              size={'large'}
+              bordered={false}
+              defaultValue={'month'}
+              onChange={(value) => setDate4(value)}
+          >
+            {optionsDate.map((option, index) => (
+                <Option key={index} value={option.code}>
+                  {option.name}
+                </Option>
+            ))}
+          </Select>
+        </div>
+        <div
+            ref={eChartsRef4}
+            style={{
+              width: '100%',
+              height: 500,
+            }}
+        ></div>
+      </Card>
       <Card>
         <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
           <Select
