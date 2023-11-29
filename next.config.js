@@ -49,13 +49,15 @@ module.exports = withLess(
     // next.config.js
     async rewrites() {
       return [
-        {
-          source: '/v1/admin/:path*',
-          // destination: 'http://192.168.50.219:8020/v1/admin/:path*',
-          //   destination: 'https://api.metablox.io/v1/admin/:path*',
-          // destination: 'https://apidev.metablox.io/v1/admin/:path*',
-          destination: 'https://apitest.metablox.io/v1/admin/:path*',
-        },
+          {
+              source: '/v1/admin/:path*',
+              // destination: 'http://192.168.50.219:8020/v1/admin/:path*',
+              // destination: 'https://apidev.metablox.io/v1/admin/:path*',
+              // destination: 'https://apitest.metablox.io/v1/admin/:path*',
+              destination: 'https://apistage.metablox.io/v1/admin/:path*',
+              // destination: 'https://api.metablox.io/v1/admin/:path*',
+
+          },
         // {
         //   source: '/v1/admin/:path*',
         //   destination: 'http://dev.lingcoder.com/v1/admin/:path*',
