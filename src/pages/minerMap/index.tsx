@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import GoogleMapReact from 'google-map-react';
 import styles from '@/pages/minerMap/index.module.less';
 import {Image as ArcoImage, Message, Popconfirm, Typography} from '@arco-design/web-react';
-import {getMinerMapData, setMinerMapData} from '@/utils/function';
 import HealthMetabloxOffline from '@/assets/miner/health-metablox-offline.png';
 import HealthMetabloxPremium from '@/assets/miner/health-metablox-premium.png';
 import HealthWifiHigh from '@/assets/miner/health-wifi-high.png';
@@ -16,7 +15,7 @@ import ImgSsid from '@/assets/miner/ssid.png';
 import {MarkerClusterer} from "@googlemaps/markerclusterer";
 import {Cluster} from "@googlemaps/markerclusterer/dist/cluster";
 import {ClusterStats} from "@googlemaps/markerclusterer/dist/renderer";
-import {minerMapView} from "@/request/api";
+import {ChartTotal, minerMapView} from "@/request/api";
 const { Text } = Typography;
 
 const HealthOption = {
@@ -120,6 +119,9 @@ const GoogleInfoWindow = ({minerInfo,isOpen,setIsOpen}) => {
 }
 
 const initMinerMapData = (data: any) => {
+  if(!data){
+    return []
+  }
   return data.map((elem) => {
     let arrAddress = [];
     let mInfo
@@ -218,6 +220,7 @@ const initMinerMapData = (data: any) => {
 const App = () => {
   const [isInfoWindowOpen, setIsInfoWindowOpen] = useState(false);
   const [minerInfo, setMinerInfo] = useState({});
+  const [totalData, setTotalData] = useState<any>({});
 
   // setup map
   const mapRef = useRef<any>();
@@ -256,8 +259,7 @@ const App = () => {
         data = [...data,...(re0?.data?.list??[])]
       }
     }
-    setMinerMapData(data);
-
+    // setMinerMapData(data);
     return data
   }
 
@@ -397,11 +399,20 @@ const App = () => {
 
   useEffect(() => {
     // fetchMapMarkers();
+    ChartTotal({
+    }).then((res) => {
+      const { code } = res;
+      const data = res?.data ?? {};
+      if (code == 200) {
+        setTotalData(data);
+      }
+    });
   }, []);
 
   return (
     <div className="flex justify-center">
       <div style={{ height: '80vh', width: '90%', marginTop: '2vh' }}>
+        {totalData?.totalWiFiNum && <div className='flex flex-row' style={{position:'absolute',right:'12%',top:'120px',zIndex:99999}}><div style={{marginRight:'14px',fontSize:'20px',lineHeight:'30px',fontWeight:'600',color:'#eeeeeee6'}}>Total Miners</div> <div style={{fontSize:'24px',lineHeight:'30px',fontWeight:'600',color:'#eeeeeee6'}}>{totalData?.totalWiFiNum ?? ''}</div></div>}
         <GoogleMapReact
           bootstrapURLKeys={{
             key: process.env.NEXT_GOOGLE_MAP_API_KEY,
@@ -429,8 +440,9 @@ const App = () => {
           }}
           options={createMapOptions}
         >
-          {isInfoWindowOpen && <GoogleInfoWindow isOpen={isInfoWindowOpen} setIsOpen={setIsInfoWindowOpen} minerInfo={minerInfo}></GoogleInfoWindow>}
+
         </GoogleMapReact>
+        {isInfoWindowOpen && <GoogleInfoWindow isOpen={isInfoWindowOpen} setIsOpen={setIsInfoWindowOpen} minerInfo={minerInfo}></GoogleInfoWindow>}
       </div>
     </div>
   );
