@@ -51,72 +51,6 @@ const HealthOption = {
   },
 };
 
-const GoogleInfoWindow = ({minerInfo,isOpen,setIsOpen}) => {
-  return       (
-      <Popconfirm
-          style={{position:'absolute',left:minerInfo.clientX,top:minerInfo.clientY}}
-          popupVisible={isOpen}
-          focusLock
-          title=""
-          icon=""
-          onVisibleChange={(ee)=>{
-            setIsOpen(ee)
-          }}
-          triggerProps={{position:minerInfo.windowPosition}}
-          cancelButtonProps={{ style: { display: 'none' } }}
-          okButtonProps={{ style: { display: 'none' } }}
-          content={
-            <div className={styles.popConfirmContent}>
-              <div className={styles.popConfirmContentHeader}>
-                <div>
-                  <ArcoImage width={100} height={100} src={minerInfo.logo ?? 'error.jpg'} alt="wifi-logo"/>
-
-                </div>
-                <div className={styles.popConfirmContentHeaderInfo}>
-                  <Text style={{width:'150px',marginBottom:'0'}} ellipsis={{ showTooltip: true }} >{minerInfo.name}</Text>
-                  <div className="flex flex-row">
-                    <ArcoImage preview={false} width={24} height={24} alt="wifi-health" src={minerInfo.iconHealth}/>
-                    <div
-                        style={{
-                          fontSize: '12px',
-                          lineHeight: '26px',
-                          marginLeft: '5px',
-                          color:minerInfo.colorHealth,
-                        }}
-                    >
-                      {minerInfo.nameHealth}
-                    </div>
-                  </div>
-                  <div className="flex flex-row">
-                    <ArcoImage preview={false} width={24} height={18} src={ImgSsid?.src} alt="wifi-Ssid"
-                    />
-                    <Text style={{width:'150px',height:'28px',lineHeight:'28px',marginLeft:'4px',marginBottom:'0'}} ellipsis={{ showTooltip: true }} >{minerInfo?.wifiList?.[0]?.ssid}</Text>
-                  </div>
-                  <div>+{minerInfo.points} Points</div>
-                </div>
-              </div>
-              <div className={styles.popConfirmContentFooter}>
-                <div className="flex flex-row">
-                  <ArcoImage preview={false} width={16} height={16} src={ImgLocation?.src} alt="wifi-Location"/>
-                  <div
-                      style={{
-                        fontSize: '12px',
-                        lineHeight: '24px',
-                        marginLeft: '11px',
-                      }}
-                  >
-                    {minerInfo.address}
-                  </div>
-                </div>
-              </div>
-            </div>
-          }
-      >
-      </Popconfirm>
-  )
-
-
-}
 
 const initMinerMapData = (data: any) => {
   if(!data){
@@ -139,78 +73,24 @@ const initMinerMapData = (data: any) => {
     mInfo.city && (arrAddress = [...arrAddress,mInfo.city])
     mInfo.streetName && (arrAddress = [...arrAddress,mInfo.streetName])
     mInfo.floor && (arrAddress = [...arrAddress,mInfo.floor])
-
-    let type = '';
-    if (
-        elem.ownerType === 'share-wifi' &&
-        elem.health == 0
-    ) {
-      type = 'share-wifi-0';
-    } else if (
-        elem.ownerType === 'share-wifi' &&
-        elem.health == 1
-    ) {
-      type = 'share-wifi-1';
-    } else if (
-        elem.ownerType === 'share-wifi' &&
-        elem.health == 2
-    ) {
-      type = 'share-wifi-2';
-    } else if (
-        elem.ownerType === 'share-wifi' &&
-        elem.health == 3
-    ) {
-      type = 'share-wifi-3';
-    } else if (
-        elem.ownerType === 'merchant' &&
-        elem.health == 0
-    ) {
-      type = 'merchant-0';
-    } else if (
-        elem.ownerType === 'merchant' &&
-        elem.health == 4
-    ) {
-      type = 'merchant-4';
-    } else if (
-        elem.ownerType === 'member' &&
-        elem.health == 0
-    ) {
-      type = 'member-0';
-    } else if (
-        elem.ownerType === 'member' &&
-        elem.health == 4
-    ) {
-      type = 'member-4';
-    }
-
     let logo = elem.logo
     if(logo === ''){
-      if(['share-wifi-0', 'share-wifi-1', 'share-wifi-2', 'share-wifi-3',].includes(type)){
+      if(elem.ownerType === 'share-wifi'){
         logo = ImgShareWifi?.src
       }
-      else if(['merchant-0', 'merchant-4', 'member-0', 'member-4',].includes(type)){
+      else if(['merchant', 'member',].includes(elem.ownerType)){
         logo = ImgMetablox?.src
       }
     }
-
-    const iconHealth = HealthOption?.['v-' + (['merchant-0', 'member-0'].includes(type) && elem.health == 0 ? '00' : elem.health)]?.img?.src
 
     return {
       minerId: elem.minerId,
       logo0: elem.logo,
       logo: logo,
-      iconHealth: iconHealth,
-      colorHealth: HealthOption?.['v-' + elem.health]?.color,
-      nameHealth: HealthOption?.['v-' + elem.health]?.name,
-      points: elem.points,
-      ownerId: elem.ownerId,
-      ownerType: elem.ownerType,
-      health: elem.health,
       lat: elem.latitude,
       lng: elem.longitude,
       name: mInfo.name,
       address: arrAddress.join(),
-      wifiList:elem.wifiList
     }
   });
 };
@@ -218,8 +98,6 @@ const initMinerMapData = (data: any) => {
 
 
 const App = () => {
-  const [isInfoWindowOpen, setIsInfoWindowOpen] = useState(false);
-  const [minerInfo, setMinerInfo] = useState({});
   const [totalData, setTotalData] = useState<any>({});
 
   // setup map
@@ -265,6 +143,11 @@ const App = () => {
 
 
   const initMarkers = async ({mapData,map,maps}) => {
+
+    const infowindow = new maps.InfoWindow({
+      content: '',
+    })
+
     // Add some markers to the map.
     const markers = initMinerMapData(mapData)?.map( (miner, i) => {
       const position = {
@@ -285,29 +168,20 @@ const App = () => {
         content: markerTag,
       });
 
-
       // markers can only be keyboard focusable when they have click listeners
       // open info window when marker is clicked
       marker.addListener("click", (e) => {
-        const clientX = e.domEvent.clientX-e.domEvent.offsetX-162
-        let clientY = e.domEvent.clientY-e.domEvent.offsetY
-        let position
-        if(clientY <= 450){
-          position = 'bottom'
-          clientY = clientY + 50
-        }
-        else {
-          position = 'top'
-          clientY = clientY-220
-        }
-        miner = {
-          ...miner,
-          clientX:clientX,
-          windowPosition:position,
-          clientY:clientY
-        }
-        setMinerInfo(miner)
-        setIsInfoWindowOpen(true)
+        const contentString =
+            '<div id="content" style="width: 300px;margin-right: 10px;margin-bottom: 15px;">' +
+            '<div id="siteNotice">' +
+            '</div>' +
+            '<h1 id="firstHeading" class="firstHeading">'+miner.name+'</h1>' +
+            '<div id="bodyContent">' +
+            '<p>'+miner.address+'</p>' +
+            '</div>' +
+            '</div>';
+        infowindow.setContent(contentString)
+        infowindow.open(map, marker);
       });
 
       return marker;
@@ -381,11 +255,6 @@ const App = () => {
               map.setZoom(15);
               map.setCenter(pos);
               new maps.Marker({position:pos, map})
-              /*  const infowindow = new maps.InfoWindow({
-                  content: 'getInfoWindowString(place)',
-                })
-                infowindow.open(map, marker);*/
-
             },
             (error) => {
               Message.error(error.message);
@@ -412,7 +281,7 @@ const App = () => {
   return (
     <div className="flex justify-center">
       <div style={{ height: '80vh', width: '90%', marginTop: '2vh' }}>
-        {totalData?.totalWiFiNum && <div className='flex flex-row' style={{position:'absolute',right:'12%',top:'120px',zIndex:99999}}><div style={{marginRight:'14px',fontSize:'20px',lineHeight:'30px',fontWeight:'600',color:'#eeeeeee6'}}>Total Miners</div> <div style={{fontSize:'24px',lineHeight:'30px',fontWeight:'600',color:'#eeeeeee6'}}>{totalData?.totalWiFiNum ?? ''}</div></div>}
+        {totalData?.totalWiFiNum && <div className='flex flex-row' style={{position:'absolute',right:'12%',top:'120px',zIndex:999}}><div style={{marginRight:'14px',fontSize:'20px',lineHeight:'30px',fontWeight:'600',color:'#eeeeeee6'}}>Total Miners</div> <div style={{fontSize:'24px',lineHeight:'30px',fontWeight:'600',color:'#eeeeeee6'}}>{totalData?.totalWiFiNum ?? ''}</div></div>}
         <GoogleMapReact
           bootstrapURLKeys={{
             key: process.env.NEXT_GOOGLE_MAP_API_KEY,
@@ -442,7 +311,6 @@ const App = () => {
         >
 
         </GoogleMapReact>
-        {isInfoWindowOpen && <GoogleInfoWindow isOpen={isInfoWindowOpen} setIsOpen={setIsInfoWindowOpen} minerInfo={minerInfo}></GoogleInfoWindow>}
       </div>
     </div>
   );

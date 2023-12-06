@@ -331,6 +331,8 @@ function Overview() {
       nnum = nnum + ittt
       return nnum
     })
+    xData.pop()
+    yData.pop()
     myChart.setOption(initLineOption( "rgb(253, 221, 96)",'Accumulated number of App User','App User',xData,yData))
   };
 
@@ -347,6 +349,8 @@ function Overview() {
       nnum = nnum + ittt
       return nnum
     })
+    xData.pop()
+    yData.pop()
     myChart.setOption(initLineOption( "rgb(255, 110, 118)",'Accumulated number of New Added WiFi','New Added WiFi',xData,yData))
   };
 
@@ -363,6 +367,8 @@ function Overview() {
       nnum = nnum + ittt
       return nnum
     })
+    xData.pop()
+    yData.pop()
     myChart.setOption(initLineOption( "rgb(88, 217, 249)",'Accumulated number of Issued mPoints','Issued mPoints',xData,yData))
   };
 
@@ -379,6 +385,8 @@ function Overview() {
       nnum = nnum + ittt
       return nnum
     })
+    xData.pop()
+    yData.pop()
     myChart.setOption(initLineOption( "rgb(255, 138, 69)",'Accumulated number of Issued Stickers','Issued Stickers',xData,yData))
   };
 
