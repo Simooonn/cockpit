@@ -1,53 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import GoogleMapReact from 'google-map-react'
-import { Message, Typography } from '@arco-design/web-react'
-import HealthMetabloxOffline from '@/assets/miner/health-metablox-offline.png'
-import HealthMetabloxPremium from '@/assets/miner/health-metablox-premium.png'
-import HealthWifiHigh from '@/assets/miner/health-wifi-high.png'
-import HealthWifiLow from '@/assets/miner/health-wifi-low.png'
-import HealthWifiMedium from '@/assets/miner/health-wifi-medium.png'
-import HealthWifiOffline from '@/assets/miner/health-wifi-offline.png'
+import { Message } from '@arco-design/web-react'
 import ImgMetablox from '@/assets/miner/metablox.png'
 import ImgShareWifi from '@/assets/miner/share-wifi.png'
 import { MarkerClusterer } from '@googlemaps/markerclusterer'
 import { Cluster } from '@googlemaps/markerclusterer/dist/cluster'
 import { ClusterStats } from '@googlemaps/markerclusterer/dist/renderer'
 import { ChartTotal, minerMapView } from '@/request/api'
-const { Text } = Typography
-
-const HealthOption = {
-    'v-00': {
-        name: 'Offline',
-        img: HealthMetabloxOffline,
-        color: 'rgb(162,162,213)',
-    },
-    'v-0': {
-        name: 'Offline',
-        img: HealthWifiOffline,
-        color: 'rgba(162,162,213)',
-    },
-    'v-1': {
-        name: 'Low',
-        img: HealthWifiLow,
-        color: '#FF9078',
-    },
-    'v-2': {
-        name: 'Medium',
-        img: HealthWifiMedium,
-        color: '#FBC45A',
-    },
-    'v-3': {
-        name: 'High',
-        img: HealthWifiHigh,
-        color: '#54C7B9',
-    },
-    'v-4': {
-        name: 'OpenRoaming',
-        img: HealthMetabloxPremium,
-        color: '#54C7B9',
-    },
-}
-
 
 const initMinerMapData = (data: any) => {
     if(!data){
@@ -100,7 +59,7 @@ const App = () => {
     // setup map
     const mapRef = useRef<any>()
 
-    const createMapOptions = (maps) => {
+    const createMapOptions = (/*maps*/) => {
         return {
             mapId: '1075f7ed7a304773',
             minZoom: 2,
@@ -146,7 +105,7 @@ const App = () => {
         })
 
         // Add some markers to the map.
-        const markers = initMinerMapData(mapData)?.map( (miner, i) => {
+        const markers = initMinerMapData(mapData)?.map( (miner) => {
             const position = {
                 lat: miner?.lat ?? 0, lng: miner?.lng ?? 0
             }
@@ -167,7 +126,7 @@ const App = () => {
 
             // markers can only be keyboard focusable when they have click listeners
             // open info window when marker is clicked
-            marker.addListener('click', (e) => {
+            marker.addListener('click', () => {
                 const contentString =
             '<div id="content" style="width: 300px;margin-right: 10px;margin-bottom: 15px;">' +
             '<div id="siteNotice">' +

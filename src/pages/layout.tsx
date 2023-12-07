@@ -1,122 +1,33 @@
 import React, { useState, ReactNode, useRef, useEffect } from 'react'
-import { Layout, Menu, Spin } from '@arco-design/web-react'
+import { Layout, Spin } from '@arco-design/web-react'
 import cs from 'classnames'
-import {
-    IconDashboard,
-    IconTag,
-    IconApps,
-    IconUser,
-    IconFire,
-    IconSettings,
-    IconHome,
-    IconUserGroup,
-    IconCompass,
-    IconDesktop,
-    IconTool, IconBook, IconPublic,
-} from '@arco-design/web-react/icon'
+
+
 import { useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 
-import qs from 'query-string'
 import Footer from '../components/Footer'
 import useRoute, { IRoute } from '@/routes'
-import useLocale from '@/utils/useLocale'
 import { GlobalState } from '@/store'
 import getUrlParams from '@/utils/getUrlParams'
 import styles from '@/style/layout.module.less'
 import Workplace from '@/pages/dashboard'
 
-const MenuItem = Menu.Item
-const SubMenu = Menu.SubMenu
-
-const Sider = Layout.Sider
 const Content = Layout.Content
-
-function getIconFromKey(key) {
-    switch (key) {
-    case 'dashboard':
-        return <IconDashboard className={styles.icon} />
-    case 'example':
-        return <IconTag className={styles.icon} />
-    case 'merchant':
-        return <IconApps className={styles.icon} />
-    case 'miner':
-        return <IconApps className={styles.icon} />
-    case 'user':
-        return <IconUser className={styles.icon} />
-    case 'settings':
-        return <IconSettings className={styles.icon} />
-    case 'activities':
-        return <IconFire className={styles.icon} />
-    case 'rights':
-        return <IconUserGroup className={styles.icon} />
-    case 'personalCenter':
-        return <IconHome className={styles.icon} />
-    case 'visualize':
-        return <IconCompass className={styles.icon} />
-    case 'systemMonitor':
-        return <IconDesktop className={styles.icon} />
-    case 'systemTools':
-        return <IconTool className={styles.icon} />
-    case 'dataStatistics':
-        return <IconBook className={styles.icon} />
-    case 'minerMap':
-        return <IconPublic className={styles.icon} />
-    default:
-        return <div className={styles['icon-empty']} />
-    }
-}
 
 function PageLayout({ children }: { children: ReactNode }) {
     const urlParams = getUrlParams()
     const router = useRouter()
     const pathname = router.pathname
-    const currentComponent = qs.parseUrl(pathname).url.slice(1)
-    const locale = useLocale()
-    const { userInfo, settings, userLoading } = useSelector(
-        (state: GlobalState) => state
-    )
-
-    const [ collapsed, setCollapsed ] = useState<boolean>(false)
-
+    const { userInfo, settings, userLoading } = useSelector((state: GlobalState) => state)
     const [ routes, defaultRoute ] = useRoute(userInfo?.permissions)
-
-    const defaultSelectedKeys = [ currentComponent || defaultRoute ]
-    const paths = (currentComponent || defaultRoute).split('/')
-    const defaultOpenKeys = paths.slice(0, paths.length - 1)
-
-    const [ selectedKeys, setSelectedKeys ] =
-    useState<string[]>(defaultSelectedKeys)
-    const [ openKeys, setOpenKeys ] = useState<string[]>(defaultOpenKeys)
-
-    const navbarHeight = 60
-    const menuWidth = collapsed ? 48 : settings?.menuWidth
-
     const showNavbar = settings?.navbar && urlParams.navbar !== false
-    const showMenu = settings?.menu && urlParams.menu !== false
     const showFooter = settings?.footer && urlParams.footer !== false
-
     const routeMap = useRef<Map<string, ReactNode[]>>(new Map())
-    const menuMap = useRef<
-    Map<string, { menuItem?: boolean; subMenu?: boolean }>
-  >(new Map())
-
     const [ breadcrumb, setBreadCrumb ] = useState([])
 
-    function onClickMenuItem(key) {
-        setSelectedKeys([ key ])
-    }
-
-    function toggleCollapse() {
-        setCollapsed((collapsed) => !collapsed)
-    }
-
-    const paddingLeft = showMenu ? { paddingLeft: menuWidth } : {}
-    const paddingTop = showNavbar ? { paddingTop: navbarHeight } : {}
-    const paddingStyle = { ...paddingLeft, ...paddingTop }
-
-    function renderRoutes(locale) {
+    function renderRoutes() {
         routeMap.current.clear()
         return function travel(_routes: IRoute[], level, parentNode = []) {
             return _routes.map((route) => {
@@ -124,73 +35,10 @@ function PageLayout({ children }: { children: ReactNode }) {
                     `/${route.key}`,
                     breadcrumb ? [ ...parentNode, route.name ] : []
                 )
-                // const { breadcrumb = true, ignore } = route;
-                // const iconDom = getIconFromKey(route.key);
-                // const titleDom = (
-                //   <>
-                //     {iconDom} {locale[route.name] || route.name}
-                //   </>
-                // );
-                //
-                // routeMap.current.set(
-                //   `/${route.key}`,
-                //   breadcrumb ? [...parentNode, route.name] : []
-                // );
-                //
-                // const visibleChildren = (route.children || []).filter((child) => {
-                //   const { ignore, breadcrumb = true } = child;
-                //   if (ignore || route.ignore) {
-                //     routeMap.current.set(
-                //       `/${child.key}`,
-                //       breadcrumb ? [...parentNode, route.name, child.name] : []
-                //     );
-                //   }
-                //
-                //   return !ignore;
-                // });
-                //
-                // if (ignore) {
-                //   return '';
-                // }
-                // if (visibleChildren.length) {
-                //   menuMap.current.set(route.key, { subMenu: true });
-                //   return (
-                //     <SubMenu key={route.key} title={titleDom}>
-                //       {travel(visibleChildren, level + 1, [...parentNode, route.name])}
-                //     </SubMenu>
-                //   );
-                // }
-                // menuMap.current.set(route.key, { menuItem: true });
-                // return (
-                //   <MenuItem key={route.key}>
-                //     <Link href={`/${route.key}`}>
-                //       <a>{titleDom}</a>
-                //     </Link>
-                //   </MenuItem>
-                // );
             })
         }
     }
 
-    function updateMenuStatus() {
-        const pathKeys = pathname.split('/')
-        const newSelectedKeys: string[] = []
-        const newOpenKeys: string[] = [ ...openKeys ]
-        while (pathKeys.length > 0) {
-            const currentRouteKey = pathKeys.join('/')
-            const menuKey = currentRouteKey.replace(/^\//, '')
-            const menuType = menuMap.current.get(menuKey)
-            if (menuType && menuType.menuItem) {
-                newSelectedKeys.push(menuKey)
-            }
-            if (menuType && menuType.subMenu && !openKeys.includes(menuKey)) {
-                newOpenKeys.push(menuKey)
-            }
-            pathKeys.pop()
-        }
-        setSelectedKeys(newSelectedKeys)
-        setOpenKeys(newOpenKeys)
-    }
 
     const goToUrl = (url = '') => {
         window.location.href = url
@@ -200,7 +48,6 @@ function PageLayout({ children }: { children: ReactNode }) {
     useEffect(() => {
         const routeConfig = routeMap.current.get(pathname)
         setBreadCrumb(routeConfig || [])
-        updateMenuStatus()
     }, [ pathname ])
 
     return (
@@ -234,20 +81,11 @@ function PageLayout({ children }: { children: ReactNode }) {
                 <Spin className={styles['spin']} />
             ) : (
                 <Layout>
-                    {renderRoutes(locale)(routes, 1)}
+                    {renderRoutes()(routes, 1)}
                     <Layout className={styles['layout-content']}>
                         <div className={styles['layout-content-wrapper']}>
                             {!!breadcrumb.length && (
-                                <div className={styles['layout-breadcrumb']}>
-
-                                    {/*<Breadcrumb>*/}
-                                    {/*  {breadcrumb.map((node, index) => (*/}
-                                    {/*    <Breadcrumb.Item key={index}>*/}
-                                    {/*      {typeof node === 'string' ? locale[node] || node : node}*/}
-                                    {/*    </Breadcrumb.Item>*/}
-                                    {/*  ))}*/}
-                                    {/*</Breadcrumb>*/}
-                                </div>
+                                <div className={styles['layout-breadcrumb']}></div>
                             )}
 
                             <Content className={styles['layout-content1']}>

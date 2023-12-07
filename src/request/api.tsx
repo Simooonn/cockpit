@@ -1,14 +1,6 @@
-import { get, post } from './http'
+import { get } from './http'
 const apiGet = (url: string, p: any) =>
     get(url, p)
-        .then((res: any) => {
-            return res
-        })
-        .catch((ee: any) => {
-            return ee
-        })
-const apiPost = (url: string, p: any, config: any = {}) =>
-    post(url, p, config)
         .then((res: any) => {
             return res
         })

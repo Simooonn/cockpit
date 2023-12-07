@@ -16,7 +16,6 @@ import changeTheme from '@/utils/changeTheme'
 import useStorage from '@/utils/useStorage'
 import Layout from './layout'
 import '../mock'
-import { getLocalUser } from '@/utils/function'
 
 const store = createStore(rootReducer)
 
@@ -46,24 +45,6 @@ export default function MyApp({
             return enUS
         }
     }, [ lang ])
-
-    function fetchUserInfo() {
-        store.dispatch({
-            type: 'update-userInfo',
-            payload: { userLoading: true },
-        })
-        store.dispatch({
-            type: 'update-userInfo',
-            payload: { userInfo: getLocalUser(), userLoading: false },
-        })
-
-    // getUserInfo().then((res) => {
-    //   store.dispatch({
-    //     type: 'update-userInfo',
-    //     payload: { userInfo: res.data, userLoading: false },
-    //   });
-    // });
-    }
 
     useEffect(() => {
         const handleStart = () => {

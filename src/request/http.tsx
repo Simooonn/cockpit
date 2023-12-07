@@ -7,15 +7,6 @@ const ApiUrl =
       ? api_url()
       : process.env.NEXT_APP_API_URL
 
-//Image link domain name
-// const ImgUrl = process.env.REACT_APP_MODE === 'production' ? '' : ''
-// console.log('location.port1',window.location.port);
-
-// Login Route
-const LOGIN = '/login'
-
-// let hide = null
-
 //Create an axis instance, where you can set the default configuration of the request
 const instance = axios.create({
     timeout: 100000, // Set request timeout for 10s
