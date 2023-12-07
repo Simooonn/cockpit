@@ -1,5 +1,4 @@
-import Mock from 'mockjs';
-import setupMock from '@/utils/setupMock';
+import setupMock from '@/utils/setupMock'
 // const getMiningList = () => {
 //   const list = [
 //     {
@@ -393,7 +392,7 @@ import setupMock from '@/utils/setupMock';
 // };
 
 setupMock({
-  setup: () => {
+    setup: () => {
     // //mining
     // Mock.mock(new RegExp('/merchant/mining_list'), () => {
     //   return getMiningList();
@@ -473,5 +472,5 @@ setupMock({
     // Mock.mock(new RegExp('/merchant/operateLogs'), () => {
     //   return getOperateLogs();
     // });
-  },
-});
+    },
+})

@@ -7,14 +7,10 @@
     "local": "cross-env NODE_ENV=test next dev",
     "start": "next start",
     "build:prod": "cross-env NODE_ENV=production next build && next export",
-    "eslint": "",
-    "stylelint": "",
-    "pre-commit": "",
-    "prepare": "",
-    "eslint1": "eslint src/ --ext .ts,.tsx,.js,.jsx --fix --cache",
-    "stylelint1": "stylelint 'src/**/*.less' 'src/**/*.css' --fix --cache",
-    "pre-commit1": "pretty-quick --staged && npm run eslint && npm run stylelint",
-    "prepare1": "husky install && husky add .husky/pre-commit 'npm run pre-commit'"
+    "eslint": "eslint src/ --ext .ts,.tsx,.js,.jsx --fix --cache",
+    "stylelint": "stylelint 'src/**/*.less' 'src/**/*.css' --fix --cache",
+    "pre-commit": "pretty-quick --staged && npm run eslint && npm run stylelint",
+    "prepare": "husky install && husky add .husky/pre-commit 'npm run pre-commit'"
   },
   "dependencies": {
     "@antv/data-set": "^0.11.8",
@@ -72,6 +68,7 @@
     "stylelint": "^14.1.0",
     "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-standard": "^24.0.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
     "typescript": "4.4.4"
   }
 }

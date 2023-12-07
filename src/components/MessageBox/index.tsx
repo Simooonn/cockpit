@@ -1,13 +1,13 @@
-import React from 'react'; // useEffect, useState
+import React from 'react' // useEffect, useState
 // import axios from 'axios';
 // import groupBy from 'lodash/groupBy';
 import {
-  Badge,
-  // Tabs,
-  // Avatar,
-  // Spin,
-  // Button,
-} from '@arco-design/web-react';
+    Badge,
+    // Tabs,
+    // Avatar,
+    // Spin,
+    // Button,
+} from '@arco-design/web-react'
 // import {
 //   IconMessage,
 //   IconCustomerService,
@@ -101,24 +101,24 @@ import {
 //           {tabList.map((item) => {
 //             const { key, title, avatar } = item;
 {
-  /*            const data = groupData[key] || [];*/
+    /*            const data = groupData[key] || [];*/
 }
 {
-  /*            const unReadData = data.filter((item) => !item.status);*/
+    /*            const unReadData = data.filter((item) => !item.status);*/
 }
 //             return (
 //               <Tabs.TabPane
 {
-  /*                key={key}*/
+    /*                key={key}*/
 }
 {
-  /*                title={*/
+    /*                title={*/
 }
 //                   <span>
 //                     {title}
 //                     {unReadData.length ? `(${unReadData.length})` : ''}
 {
-  /*                  </span>*/
+    /*                  </span>*/
 }
 //                 }
 //               >
@@ -142,8 +142,8 @@ import {
 // }
 
 function MessageBox({ children }) {
-  return (
-    <Badge count={9}>{children}</Badge>
+    return (
+        <Badge count={9}>{children}</Badge>
     /* <Trigger
       trigger="hover"
       popup={() => <DropContent />}
@@ -155,7 +155,7 @@ function MessageBox({ children }) {
         {children}
       </Badge>
     </Trigger>*/
-  );
+    )
 }
 
-export default MessageBox;
+export default MessageBox

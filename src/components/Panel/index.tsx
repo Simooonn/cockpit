@@ -1,7 +1,7 @@
-import React, { CSSProperties, ReactNode } from 'react';
-import { Typography } from '@arco-design/web-react';
-import cs from 'classnames';
-import styles from './index.module.less';
+import React, { CSSProperties, ReactNode } from 'react'
+import { Typography } from '@arco-design/web-react'
+import cs from 'classnames'
+import styles from './index.module.less'
 
 interface PanelProps {
   className?: string;
@@ -11,13 +11,13 @@ interface PanelProps {
 }
 
 function Panel(props: PanelProps) {
-  const { className, style, title, children } = props;
-  return (
-    <div className={cs(styles.panel, className)} style={style}>
-      <Typography.Title>{title}</Typography.Title>
-      {children}
-    </div>
-  );
+    const { className, style, title, children } = props
+    return (
+        <div className={cs(styles.panel, className)} style={style}>
+            <Typography.Title>{title}</Typography.Title>
+            {children}
+        </div>
+    )
 }
 
-export default Panel;
+export default Panel
