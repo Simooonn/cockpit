@@ -125,30 +125,31 @@ function Overview() {
     }
 
     const dateConversion = (date = '', type='day') => {
-        return date
         let data = ''
         if(type === 'day'){
             data = date.replaceAll('-', '.')
         }
         else if(type === 'week'){
-            data = date.substr(0, 4)+',Week'+date.substr(4, 2)
+            data = 'Week'+date.substr(5, 2)+','+date.substr(0, 4)
         }
         else if(type === 'month'){
+            const year = date.substr(0, 4)
+            const dateMonth = date.slice(5)
             const month = {
-                month1: 'Jan.',
-                month2: 'Feb.',
-                month3: 'Mar.',
-                month4: 'Apr.',
-                month5: 'May.',
-                month6: 'Jun.',
-                month7: 'Jul.',
-                month8: 'Aug.',
-                month9: 'Sep.',
-                month10: 'Oct.',
-                month11: 'Nov.',
-                month12: 'Dec.',
+                month1: 'Jan. '+year,
+                month2: 'Feb. '+year,
+                month3: 'Mar. '+year,
+                month4: 'Apr. '+year,
+                month5: 'May. '+year,
+                month6: 'Jun. '+year,
+                month7: 'Jul. '+year,
+                month8: 'Aug. '+year,
+                month9: 'Sep. '+year,
+                month10: 'Oct. '+year,
+                month11: 'Nov. '+year,
+                month12: 'Dec. '+year,
             }
-            data = month?.['month'+date]
+            data = month?.['month'+dateMonth]
         }
         else {
             data = date
@@ -157,7 +158,7 @@ function Overview() {
     }
 
 
-    const initLineOption = (color, chartTitle, lineTitle, xData, yData) => {
+    const initLineOption = (color, chartTitle, lineTitle, xData, yDataSolid, yDataDashed) => {
         return {
             color: [
                 color,
@@ -166,12 +167,53 @@ function Overview() {
             title: {
                 text: chartTitle,
             },
-            legend: {
-                left: 'center',
-            },
+            // legend: {
+            //     left: 'center',
+            //     // lineStyle: {
+            //     //     color: 'inherit',
+            //     // },
+            // },
             tooltip: {
                 trigger: 'axis',
+                formatter: function (params) {
+                    let value = ''
+                    if(params?.length > 1){
+                        value = params[1].data
+                    }
+                    else {
+                        value = params[0].data
+                    }
+                    //自定义模板
+                    return ` 
+                        <div>${lineTitle}</div>
+                        <span style="display:inline-block;margin-right:4px;
+						border-radius:10px;width:10px;height:10px;
+						background-color:${color};"></span>
+                        <span style="margin-right:10%;">${value}</span>
+                        <span>${value}</span>
+                        `
+                    // callback(ticket, html) //返回自定义内容
+                    const a = []
+                    const b =[]
+                    const c =[]
+                    // let res = '<div><p>' + params[0].value[0] +'</p></div>'
+                    // for (let i = 0; i < params.length; i++) {
+                    //     if (params[i].data != undefined) {
+                    //         a.push(params[i].marker)
+                    //         b.push(params[i].seriesName)
+                    //         c.push(params[i].value[1])
+                    //     }
+                    // }
+                    // const seriesMakerList = [ ...new Set(a) ]
+                    // const seriesNameList = [ ...new Set(b) ]
+                    // const seriesValueList = [ ...new Set(c) ]
+                    // for (let i = 0; i <3 ; i++) {
+                    //     res += '<p>' +seriesMakerList[i]+ seriesNameList[i] + ':' + seriesValueList[i] + '</p>'
+                    // }
+                    // return res
+                }
             },
+
             xAxis: {
                 type: 'category',
                 boundaryGap: false,
@@ -185,17 +227,37 @@ function Overview() {
             },
             series: [
                 {
-                    name: lineTitle,
-                    data: yData,
+                    // name: lineTitle,
+                    data: yDataDashed,
                     type: 'line',
+                    colorBy: 'series',
+                    smooth: 0.1,
+                    symbol: 'none',
+                    lineStyle: {
+                        color: color,
+                        width: 2,
+                        type: 'dashed'
+                    },
+                    areaStyle: {
+                        color: color,
+                        opacity: 0.2,
+                    }
+                },
+                {
+                    name: lineTitle,
+                    data: yDataSolid,
+                    type: 'line',
+                    colorBy: 'series',
                     smooth: 0.3,
                     symbol: 'none',
                     lineStyle: {
+                        color: color,
                         width: 2,
                     },
                     areaStyle: {
+                        color: color,
                         opacity: 0.2,
-                    }
+                    },
                 },
             ],
         }
@@ -208,7 +270,7 @@ function Overview() {
             thisDate = moment().utcOffset(0).format('YYYY-MM-DD')
         }
         else if(type === 'week'){
-            thisDate = moment().utcOffset(0).startOf('week').format('YYYY-MM-DD')
+            thisDate = moment().utcOffset(0).year()+'-' +moment().utcOffset(0).week()
         }
         else if(type === 'month'){
             thisDate = moment().utcOffset(0).format('YYYY-MM')
@@ -218,9 +280,10 @@ function Overview() {
         }
         let chartData
         if(data?.length >= 2){
-            const num = data?.[data?.length-2]?.num != 0? Math.ceil(data?.[data?.length-1]?.num/data?.[data?.length-2]?.num * 1.2 *data?.[data?.length-1]?.num ) : 0
+            // const num = data?.[data?.length-2]?.num != 0? Math.ceil(data?.[data?.length-1]?.num/data?.[data?.length-2]?.num * 1.2 *data?.[data?.length-1]?.num ) : 0
+            const num = data?.[data?.length-2]?.num != 0? Math.ceil(1.5 *data?.[data?.length-1]?.num ) : 0
             chartData = [ ...data, { date: thisDate, num: num } ]
-            // console.log('num', num)
+            console.log('chartData', chartData)
         }
         else{
             chartData = data
@@ -229,46 +292,59 @@ function Overview() {
         const xData = (chartData ?? [])?.map(ittt => {
             return dateConversion(ittt?.date, type)
         })
+        // xData = [...xData]  +'(Estimated)'
+        let yData = []
         if(dataType === 'growth'){
-            return [ xData, array_column(chartData, 'num') ]
+            yData = array_column(chartData, 'num')
         }
         else {
-            return [ xData, array_column(chartData, 'num')?.map(ittt => {
+            yData = array_column(chartData, 'num')?.map(ittt => {
                 nnum = nnum + ittt
                 return nnum
-            }) ]
-
+            })
         }
+
+        const yDataSolid = [ ...yData ]
+        yDataSolid.pop()
+        let yData1 = [ ...yData ]
+        yData1.pop()
+        yData1.pop()
+        yData1 = yData1.map((item) => {
+            return ''
+        })
+        const yDataDashed = [ ...yData1, yData[yData?.length-2], yData[yData?.length-1] ]
+
+        return [ xData, yDataSolid, yDataDashed, yData ]
     }
 
     const initChart1 = () => {
         const myChart = eCharts.init(eChartsRef1.current, 'dark', { renderer: 'svg', })
         const data = initChartData(data1, date1, 'growth')
-        myChart.setOption(initLineOption( 'rgb(73, 146, 255)', 'Check in Growth Quantity', 'Check In', data[0], data[1]))
+        myChart.setOption(initLineOption( 'rgb(73, 146, 255)', 'Check in Growth Quantity', 'Check In', data[0], data[1], data[2]))
     }
 
     const initChart3 = () => {
         const myChart = eCharts.init(eChartsRef3.current, 'dark', { renderer: 'svg', })
         const data = initChartData(data3, date3)
-        myChart.setOption(initLineOption( 'rgb(253, 221, 96)', 'Accumulated number of App User', 'App User', data[0], data[1]))
+        myChart.setOption(initLineOption( 'rgb(253, 221, 96)', 'Accumulated number of App User', 'App User', data[0], data[1], data[2]))
     }
 
     const initChart4 = () => {
         const myChart = eCharts.init(eChartsRef4.current, 'dark', { renderer: 'svg', })
         const data = initChartData(data4, date4)
-        myChart.setOption(initLineOption( 'rgb(255, 110, 118)', 'Accumulated number of New Added WiFi', 'New Added WiFi', data[0], data[1]))
+        myChart.setOption(initLineOption( 'rgb(255, 110, 118)', 'Accumulated number of New Added WiFi', 'New Added WiFi', data[0], data[1], data[2]))
     }
 
     const initChart5 = () => {
         const myChart = eCharts.init(eChartsRef5.current, 'dark', { renderer: 'svg', })
         const data = initChartData(data5, date5)
-        myChart.setOption(initLineOption( 'rgb(88, 217, 249)', 'Accumulated number of Issued mPoints', 'Issued mPoints', data[0], data[1]))
+        myChart.setOption(initLineOption( 'rgb(88, 217, 249)', 'Accumulated number of Issued mPoints', 'Issued mPoints', data[0], data[1], data[2]))
     }
 
     const initChart6 = () => {
         const myChart = eCharts.init(eChartsRef6.current, 'dark', { renderer: 'svg', })
         const data = initChartData(data6, date6)
-        myChart.setOption(initLineOption( 'rgb(255, 138, 69)', 'Accumulated number of Issued Stickers', 'Issued Stickers', data[0], data[1]))
+        myChart.setOption(initLineOption( 'rgb(255, 138, 69)', 'Accumulated number of Issued Stickers', 'Issued Stickers', data[0], data[1], data[2]))
     }
 
     useEffect(() => {

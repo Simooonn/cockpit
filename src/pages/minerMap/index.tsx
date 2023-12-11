@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import GoogleMapReact from 'google-map-react'
 import { Message } from '@arco-design/web-react'
-import ImgMetablox from '@/assets/miner/metablox.png'
-import ImgShareWifi from '@/assets/miner/share-wifi.png'
+// import ImgMetablox from '@/assets/miner/metablox.png'
+// import ImgShareWifi from '@/assets/miner/share-wifi.png'
 import { MarkerClusterer } from '@googlemaps/markerclusterer'
 import { Cluster } from '@googlemaps/markerclusterer/dist/cluster'
 import { ClusterStats } from '@googlemaps/markerclusterer/dist/renderer'
@@ -15,12 +15,12 @@ const initMinerMapData = (data: any) => {
     return data.map((elem) => {
         let arrAddress = []
         let mInfo
-        if (elem.ownerType === 'merchant') {
-            mInfo = { ...elem.merchantInfo, name: elem.merchantInfo.storeName }
-        } else if (elem.ownerType === 'share-wifi') {
+        if (elem?.merchantInfo) {
+            mInfo = { ...elem.merchantInfo, name: elem?.merchantInfo?.storeName }
+        } else if (elem?.shareWiFiInfo) {
             mInfo = elem.shareWiFiInfo
-        } else if (elem.ownerType === 'share-wifi') {
-            mInfo = elem.memberInfo
+        } else if (elem?.memberInfo) {
+            mInfo = { ...elem.memberInfo, name: 'Metablox Wifi' }
         } else {
             mInfo = { name: '' }
         }
@@ -29,20 +29,24 @@ const initMinerMapData = (data: any) => {
         mInfo.city && (arrAddress = [ ...arrAddress, mInfo.city ])
         mInfo.streetName && (arrAddress = [ ...arrAddress, mInfo.streetName ])
         mInfo.floor && (arrAddress = [ ...arrAddress, mInfo.floor ])
-        let logo = elem.logo
-        if(logo === ''){
-            if(elem.ownerType === 'share-wifi'){
-                logo = ImgShareWifi?.src
-            }
-            else if([ 'merchant', 'member', ].includes(elem.ownerType)){
-                logo = ImgMetablox?.src
-            }
-        }
+        // let logo = elem.logo
+        // if(!logo){
+        //     if(elem?.shareWiFiInfo){
+        //         console.log('aa');
+        //         logo = ImgShareWifi?.src
+        //     }
+        //     else{
+        //         console.log('bb');
+        //         logo = ImgMetablox?.src
+        //     }
+        // }
+        //
+        // console.log('logo',logo);
 
         return {
             minerId: elem.minerId,
-            logo0: elem.logo,
-            logo: logo,
+            // logo0: elem.logo,
+            // logo: logo,
             lat: elem.latitude,
             lng: elem.longitude,
             name: mInfo.name,
@@ -111,12 +115,12 @@ const App = () => {
             }
             const markerTag = document.createElement('div')
             markerTag.className = 'advanced-marker-tag'
-            if(miner.logo0 !== ''){
-                const markerTag1 = document.createElement('img')
-                markerTag1.className = 'advanced-marker-tag-img'
-                markerTag1.src = miner.logo
-                markerTag.append(markerTag1)
-            }
+            // if(miner.logo0 !== ''){
+            //     const markerTag1 = document.createElement('img')
+            //     markerTag1.className = 'advanced-marker-tag-img'
+            //     markerTag1.src = miner.logo
+            //     markerTag.append(markerTag1)
+            // }
 
             const marker = new maps.marker.AdvancedMarkerElement({
                 map,
@@ -229,7 +233,7 @@ const App = () => {
             const { code } = res
             const data = res?.data ?? {}
             if (code == 200) {
-                setTotalData(data)
+                setTotalData({ totalWiFiNum: data?.num })
             }
         })
     }, [])
@@ -254,7 +258,7 @@ const App = () => {
                     // defaultCenter={{ lat: 48.8566, lng: 2.3522 }}
                     // defaultZoom={1}
                     zoom={2}
-                    center={{ lat: 42.8566, lng: 2.3522 }}
+                    center={{ lat: 42.8566, lng: -20.3522 }}
                     yesIWantToUseGoogleMapApiInternals
                     onGoogleApiLoaded={ async ({ map, maps }) => {
                         mapRef.current = map
@@ -265,7 +269,6 @@ const App = () => {
                     }}
                     options={createMapOptions}
                 >
-
                 </GoogleMapReact>
             </div>
         </div>
