@@ -177,19 +177,22 @@ function Overview() {
                 trigger: 'axis',
                 formatter: function (params) {
                     let value = ''
+                    let axisValueLabel = ''
                     if(params?.length > 1){
                         value = params[1].data
+                        axisValueLabel = params[1].axisValueLabel
                     }
                     else {
                         value = params[0].data
+                        axisValueLabel = params[0].axisValueLabel
                     }
                     //自定义模板
                     return ` 
-                        <div>${lineTitle}</div>
+                        <div>${axisValueLabel}</div>
                         <span style="display:inline-block;margin-right:4px;
 						border-radius:10px;width:10px;height:10px;
 						background-color:${color};"></span>
-                        <span style="margin-right:10%;">${value}</span>
+                        <span>${lineTitle}</span>
                         <span>${value}</span>
                         `
                     // callback(ticket, html) //返回自定义内容
