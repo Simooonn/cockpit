@@ -58,7 +58,7 @@ function PageLayout({ children }: { children: ReactNode }) {
                 })}
             >
                 <header className={styles.aa1}>
-                    <div style={{ cursor: 'pointer' }}>
+                    <div style={{ cursor: 'pointer' }} onClick={() => goToUrl('https://explorer.metablox.io/')}>
                         <Image className={styles['aa1-logo']} width={235} height={60} src={'/logo-dark.png'} alt="logo" />
                     </div>
                     <div className={styles['aa1-nav-container']}>

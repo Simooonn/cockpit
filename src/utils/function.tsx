@@ -304,13 +304,20 @@ export function api_url() {
                 //stg
                 wUrl = 'https://apistage.metablox.io'
             }
-        } else if (window.location.origin.indexOf('54.185.72.94') != -1) {
+        }
+        else if (window.location.origin.indexOf('cockpit.metablox.io') != -1) {
+            //stg
+            wUrl = 'https://apistage.metablox.io'
+        }
+        else if (window.location.origin.indexOf('54.185.72.94') != -1) {
             //test - QA
             wUrl = 'https://apitest.metablox.io'
-        } else if (window.location.origin.indexOf('54.189.68.105') != -1) {
+        }
+        else if (window.location.origin.indexOf('54.189.68.105') != -1) {
             //dev
             wUrl = 'https://apidev.metablox.io/'
-        } else {
+        }
+        else {
             wUrl = ''
         }
         return wUrl + '/v1/admin'

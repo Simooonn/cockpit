@@ -11,7 +11,6 @@ import {
 import styles from '@/pages/dashboard/style/overview.module.less'
 import App from '@/pages/minerMap'
 import { array_column } from '@/utils/function'
-import moment from 'moment'
 const Option = Select.Option
 function Overview() {
     // const [todayData, setTodayData] = useState<any>({});
@@ -234,7 +233,7 @@ function Overview() {
                     data: yDataDashed,
                     type: 'line',
                     colorBy: 'series',
-                    smooth: 0.1,
+                    smooth: 0.3,
                     symbol: 'none',
                     lineStyle: {
                         color: color,
@@ -268,40 +267,40 @@ function Overview() {
 
     const initChartData = (data, type, dataType = 'accumulated') => {
         let nnum = 0
-        let thisDate
-        if(type === 'day'){
-            thisDate = moment().utcOffset(0).format('YYYY-MM-DD')
-        }
-        else if(type === 'week'){
-            thisDate = moment().utcOffset(0).year()+'-' +moment().utcOffset(0).week()
-        }
-        else if(type === 'month'){
-            thisDate = moment().utcOffset(0).format('YYYY-MM')
-        }
-        else {
-            thisDate = ''
-        }
-        let chartData
-        if(data?.length >= 2){
-            // const num = data?.[data?.length-2]?.num != 0? Math.ceil(data?.[data?.length-1]?.num/data?.[data?.length-2]?.num * 1.2 *data?.[data?.length-1]?.num ) : 0
-            const num = data?.[data?.length-2]?.num != 0? Math.ceil(1.5 *data?.[data?.length-1]?.num ) : 0
-            chartData = [ ...data, { date: thisDate, num: num } ]
-            console.log('chartData', chartData)
-        }
-        else{
-            chartData = data
-        }
+        // let thisDate
+        // if(type === 'day'){
+        //     thisDate = moment().utcOffset(0).format('YYYY-MM-DD')
+        // }
+        // else if(type === 'week'){
+        //     thisDate = moment().utcOffset(0).year()+'-' +moment().utcOffset(0).week()
+        // }
+        // else if(type === 'month'){
+        //     thisDate = moment().utcOffset(0).format('YYYY-MM')
+        // }
+        // else {
+        //     thisDate = ''
+        // }
+        // let chartData
+        // if(data?.length >= 2){
+        //     // const num = data?.[data?.length-2]?.num != 0? Math.ceil(data?.[data?.length-1]?.num/data?.[data?.length-2]?.num * 1.2 *data?.[data?.length-1]?.num ) : 0
+        //     const num = data?.[data?.length-2]?.num != 0? Math.ceil(1.5 *data?.[data?.length-1]?.num ) : 0
+        //     chartData = [ ...data, { date: thisDate, num: num } ]
+        //     console.log('chartData', chartData)
+        // }
+        // else{
+        //     chartData = data
+        // }
         // console.log('chartData', chartData)
-        const xData = (chartData ?? [])?.map(ittt => {
+        const xData = (data ?? [])?.map(ittt => {
             return dateConversion(ittt?.date, type)
         })
         // xData = [...xData]  +'(Estimated)'
         let yData = []
         if(dataType === 'growth'){
-            yData = array_column(chartData, 'num')
+            yData = array_column(data, 'num')
         }
         else {
-            yData = array_column(chartData, 'num')?.map(ittt => {
+            yData = array_column(data, 'num')?.map(ittt => {
                 nnum = nnum + ittt
                 return nnum
             })
