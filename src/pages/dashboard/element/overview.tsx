@@ -6,7 +6,7 @@ import {
 } from '@arco-design/web-react'
 import * as eCharts from 'echarts'
 import {
-    ChartCheckIn, ChartMember, ChartPoint, ChartSticker, ChartWifi,
+    ChartCheckIn, ChartMember, ChartPoint, ChartSticker, ChartTotal, ChartWifi,
 } from '@/request/api'
 import styles from '@/pages/dashboard/style/overview.module.less'
 import App from '@/pages/minerMap'
@@ -38,6 +38,14 @@ function Overview() {
     ]
 
     const fetchData = () => {
+        ChartTotal({
+        }).then((res) => {
+            const { code } = res
+            const data = res?.data ?? {}
+            if (code == 200) {
+                setTotalData(data)
+            }
+        })
         ChartCheckIn({ group: date1 }).then((res) => {
             if (res?.code == 200) {
                 setData1(res?.data ?? [])
@@ -157,7 +165,7 @@ function Overview() {
     }
 
 
-    const initLineOption = (color, chartTitle, lineTitle, xData, yDataSolid, yDataDashed) => {
+    const initLineOption = (color, chartTitle, lineTitle, xData, yDataSolid, yDataDashed, totalNum = 0) => {
         return {
             color: [
                 color,
@@ -194,25 +202,6 @@ function Overview() {
                         <span>${lineTitle}</span>
                         <span>${value}</span>
                         `
-                    // callback(ticket, html) //返回自定义内容
-                    const a = []
-                    const b =[]
-                    const c =[]
-                    // let res = '<div><p>' + params[0].value[0] +'</p></div>'
-                    // for (let i = 0; i < params.length; i++) {
-                    //     if (params[i].data != undefined) {
-                    //         a.push(params[i].marker)
-                    //         b.push(params[i].seriesName)
-                    //         c.push(params[i].value[1])
-                    //     }
-                    // }
-                    // const seriesMakerList = [ ...new Set(a) ]
-                    // const seriesNameList = [ ...new Set(b) ]
-                    // const seriesValueList = [ ...new Set(c) ]
-                    // for (let i = 0; i <3 ; i++) {
-                    //     res += '<p>' +seriesMakerList[i]+ seriesNameList[i] + ':' + seriesValueList[i] + '</p>'
-                    // }
-                    // return res
                 }
             },
 
@@ -391,6 +380,9 @@ function Overview() {
                             </Option>
                         ))}
                     </Select>
+                    <div style={{ position: 'absolute', top: '50px', right: '25vw', fontSize: '16px', color: '#fff' }}>
+                        {totalData?.totalCheckNum && `Total : ${totalData?.totalCheckNum} `}
+                    </div>
                 </div>
                 <div
                     ref={eChartsRef1}
@@ -417,6 +409,9 @@ function Overview() {
                             </Option>
                         ))}
                     </Select>
+                    <div style={{ position: 'absolute', top: '50px', right: '25vw', fontSize: '16px', color: '#fff' }}>
+                        {totalData?.totalMemberNum && `Total : ${totalData?.totalMemberNum} `}
+                    </div>
                 </div>
                 <div
                     ref={eChartsRef3}
@@ -442,6 +437,9 @@ function Overview() {
                             </Option>
                         ))}
                     </Select>
+                    <div style={{ position: 'absolute', top: '50px', right: '25vw', fontSize: '16px', color: '#fff' }}>
+                        {totalData?.totalWiFiNum && `Total : ${totalData?.totalWiFiNum} `}
+                    </div>
                 </div>
                 <div
                     ref={eChartsRef4}
@@ -467,6 +465,9 @@ function Overview() {
                             </Option>
                         ))}
                     </Select>
+                    <div style={{ position: 'absolute', top: '50px', right: '25vw', fontSize: '16px', color: '#fff' }}>
+                        {totalData?.totalPointsNum && `Total : ${totalData?.totalPointsNum} `}
+                    </div>
                 </div>
                 <div
                     ref={eChartsRef5}
@@ -492,6 +493,9 @@ function Overview() {
                             </Option>
                         ))}
                     </Select>
+                    <div style={{ position: 'absolute', top: '50px', right: '25vw', fontSize: '16px', color: '#fff' }}>
+                        {totalData?.totalStickerNum && `Total : ${totalData?.totalStickerNum} `}
+                    </div>
                 </div>
                 <div
                     ref={eChartsRef6}

@@ -233,7 +233,7 @@ const App = () => {
             const { code } = res
             const data = res?.data ?? {}
             if (code == 200) {
-                setTotalData({ totalWiFiNum: data?.num })
+                setTotalData(data)
             }
         })
     }, [])
