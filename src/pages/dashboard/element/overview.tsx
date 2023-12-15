@@ -46,6 +46,8 @@ function Overview() {
                 setTotalData(data)
             }
         })
+
+
         ChartCheckIn({ group: date1 }).then((res) => {
             if (res?.code == 200) {
                 setData1(res?.data ?? [])
@@ -165,7 +167,7 @@ function Overview() {
     }
 
 
-    const initLineOption = (color, chartTitle, lineTitle, xData, yDataSolid, yDataDashed, totalNum = 0) => {
+    const initLineOption = (color, chartTitle, lineTitle, xData, yDataSolid, yDataDashed) => {
         return {
             color: [
                 color,
@@ -256,30 +258,6 @@ function Overview() {
 
     const initChartData = (data, type, dataType = 'accumulated') => {
         let nnum = 0
-        // let thisDate
-        // if(type === 'day'){
-        //     thisDate = moment().utcOffset(0).format('YYYY-MM-DD')
-        // }
-        // else if(type === 'week'){
-        //     thisDate = moment().utcOffset(0).year()+'-' +moment().utcOffset(0).week()
-        // }
-        // else if(type === 'month'){
-        //     thisDate = moment().utcOffset(0).format('YYYY-MM')
-        // }
-        // else {
-        //     thisDate = ''
-        // }
-        // let chartData
-        // if(data?.length >= 2){
-        //     // const num = data?.[data?.length-2]?.num != 0? Math.ceil(data?.[data?.length-1]?.num/data?.[data?.length-2]?.num * 1.2 *data?.[data?.length-1]?.num ) : 0
-        //     const num = data?.[data?.length-2]?.num != 0? Math.ceil(1.5 *data?.[data?.length-1]?.num ) : 0
-        //     chartData = [ ...data, { date: thisDate, num: num } ]
-        //     console.log('chartData', chartData)
-        // }
-        // else{
-        //     chartData = data
-        // }
-        // console.log('chartData', chartData)
         const xData = (data ?? [])?.map(ittt => {
             return dateConversion(ittt?.date, type)
         })
