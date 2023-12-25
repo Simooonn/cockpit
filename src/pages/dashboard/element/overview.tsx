@@ -125,10 +125,9 @@ function Overview() {
             }).then((res) => {
                 const { code } = res
                 if (code == 200) {
-                    console.log('resresres',res);
                     setData1([ {
                         name: 'Check In',
-                        data: initChartData00000(res?.data, date1, 'growth')
+                        data: initChartData00000(res?.data, dateeee, 'growth')
                     } ])
                 }
             })
@@ -141,7 +140,7 @@ function Overview() {
                 if (code == 200) {
                     setData3([ {
                         name: 'App User',
-                        data: initChartData00000(res?.data, date3)
+                        data: initChartData00000(res?.data, dateeee)
                     } ])
                 }
             })
@@ -154,7 +153,7 @@ function Overview() {
                 if (code == 200) {
                     setData4([ {
                         name: 'New Added WiFi',
-                        data: initChartData00000(res?.data, date4)
+                        data: initChartData00000(res?.data, dateeee)
                     } ])
                 }
             })
@@ -167,7 +166,7 @@ function Overview() {
                 if (code == 200) {
                     setData5([ {
                         name: 'Issued mPoints',
-                        data: initChartData00000(res?.data, date5)
+                        data: initChartData00000(res?.data, dateeee)
                     } ])
                 }
             })
@@ -180,7 +179,7 @@ function Overview() {
                 if (code == 200) {
                     setData6([ {
                         name: 'Issued Stickers',
-                        data: initChartData00000(res?.data, date6)
+                        data: initChartData00000(res?.data, dateeee)
                     } ])
                 }
             })
@@ -495,7 +494,7 @@ function Overview() {
                 title={'Accumulated number of App User'}
                 totalDataList={appUserChartData}
                 chartDataList={data3}
-                lineColors={[ 'rgb(73, 146, 255)' ]}
+                lineColors={[ 'rgb(253, 221, 96)' ]}
                 dateType={date3}
                 setDateType={setDate3}
                 onChange={(value) => fetchChartData(3, value)}
@@ -505,7 +504,7 @@ function Overview() {
                 title={'Accumulated number of New Added WiFi'}
                 totalDataList={addedWiFiChartData}
                 chartDataList={data4}
-                lineColors={[ 'rgb(73, 146, 255)' ]}
+                lineColors={[ 'rgb(255, 110, 118)' ]}
                 dateType={date4}
                 setDateType={setDate4}
                 onChange={(value) => fetchChartData(4, value)}
@@ -515,7 +514,7 @@ function Overview() {
                 title={'Accumulated number of Issued mPoints'}
                 totalDataList={issuedmPointsChartData}
                 chartDataList={data5}
-                lineColors={[ 'rgb(73, 146, 255)' ]}
+                lineColors={[ 'rgb(88, 217, 249)' ]}
                 dateType={date5}
                 setDateType={setDate5}
                 onChange={(value) => fetchChartData(5, value)}
@@ -525,7 +524,7 @@ function Overview() {
                 title={'Accumulated number of Issued Stickers'}
                 totalDataList={issuedStickersChartData}
                 chartDataList={data6}
-                lineColors={[ 'rgb(73, 146, 255)' ]}
+                lineColors={[ 'rgb(255, 138, 69)' ]}
                 dateType={date6}
                 setDateType={setDate6}
                 onChange={(value) => fetchChartData(6, value)}
