@@ -9,7 +9,7 @@ import { ClusterStats } from '@googlemaps/markerclusterer/dist/renderer'
 import { ChartTotal, minerMapView } from '@/request/api'
 
 const initMinerMapData = (data: any) => {
-    if(!data){
+    if (!data) {
         return []
     }
     return data.map((elem) => {
@@ -55,8 +55,6 @@ const initMinerMapData = (data: any) => {
     })
 }
 
-
-
 const App = () => {
     const [ totalData, setTotalData ] = useState<any>({})
 
@@ -85,33 +83,32 @@ const App = () => {
             Message.error(res?.code)
             return false
         }
-        data = res?.data?.list??[]
-        const totalPageNum = Math.ceil(res?.data?.total/formData.size)
-        if(totalPageNum > 1){
+        data = res?.data?.list ?? []
+        const totalPageNum = Math.ceil(res?.data?.total / formData.size)
+        if (totalPageNum > 1) {
             for (let i = 2; i <= totalPageNum; i++) {
                 const re0 = await minerMapView({ ...formData, page: i })
                 if (re0?.code !== 200) {
                     Message.error(re0?.code)
                     return false
                 }
-                data = [ ...data, ...(re0?.data?.list??[]) ]
+                data = [ ...data, ...(re0?.data?.list ?? []) ]
             }
         }
         // setMinerMapData(data);
         return data
     }
 
-
     const initMarkers = async ({ mapData, map, maps }) => {
-
         const infowindow = new maps.InfoWindow({
             content: '',
         })
 
         // Add some markers to the map.
-        const markers = initMinerMapData(mapData)?.map( (miner) => {
+        const markers = initMinerMapData(mapData)?.map((miner) => {
             const position = {
-                lat: miner?.lat ?? 0, lng: miner?.lng ?? 0
+                lat: miner?.lat ?? 0,
+                lng: miner?.lng ?? 0,
             }
             const markerTag = document.createElement('div')
             markerTag.className = 'advanced-marker-tag'
@@ -132,14 +129,18 @@ const App = () => {
             // open info window when marker is clicked
             marker.addListener('click', () => {
                 const contentString =
-            '<div id="content" style="width: 300px;margin-right: 10px;margin-bottom: 15px;">' +
-            '<div id="siteNotice">' +
-            '</div>' +
-            '<h1 id="firstHeading" class="firstHeading">'+miner.name+'</h1>' +
-            '<div id="bodyContent">' +
-            '<p>'+miner.address+'</p>' +
-            '</div>' +
-            '</div>'
+          '<div id="content" style="width: 300px;margin-right: 10px;margin-bottom: 15px;">' +
+          '<div id="siteNotice">' +
+          '</div>' +
+          '<h1 id="firstHeading" class="firstHeading">' +
+          miner.name +
+          '</h1>' +
+          '<div id="bodyContent">' +
+          '<p>' +
+          miner.address +
+          '</p>' +
+          '</div>' +
+          '</div>'
                 infowindow.setContent(contentString)
                 infowindow.open(map, marker)
             })
@@ -148,10 +149,7 @@ const App = () => {
         })
 
         const renderer = {
-            render: function (
-                { count, position }: Cluster,
-                stats: ClusterStats
-            ) {
+            render: function ({ count, position }: Cluster, stats: ClusterStats) {
                 // create svg url with fill color
                 /*  const svg = window.btoa(`
   <svg fill="${color}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
@@ -182,7 +180,6 @@ const App = () => {
                 })
             },
         }
-
 
         // Add a marker clusterer to manage the markers.
         new MarkerClusterer({ markers, map, renderer })
@@ -228,12 +225,11 @@ const App = () => {
 
     useEffect(() => {
     // fetchMapMarkers();
-        ChartTotal({
-        }).then((res) => {
+        ChartTotal({}).then((res) => {
             const { code } = res
             const data = res?.data ?? {}
             if (code == 200) {
-                setTotalData({ totalWiFiNum: data?.num })
+                setTotalData(data)
             }
         })
     }, [])
@@ -241,7 +237,39 @@ const App = () => {
     return (
         <div className="flex justify-center">
             <div style={{ height: '80vh', width: '90%', marginTop: '2vh' }}>
-                {totalData?.totalWiFiNum && <div className="flex flex-row" style={{ position: 'absolute', right: '12%', top: '120px', zIndex: 999 }}><div style={{ marginRight: '14px', fontSize: '20px', lineHeight: '30px', fontWeight: '600', color: '#eeeeeee6' }}>Total Miners</div> <div style={{ fontSize: '24px', lineHeight: '30px', fontWeight: '600', color: '#eeeeeee6' }}>{totalData?.totalWiFiNum ?? ''}</div></div>}
+                {totalData?.totalWiFiNum && (
+                    <div
+                        className="flex flex-row"
+                        style={{
+                            position: 'absolute',
+                            right: '12%',
+                            top: '120px',
+                            zIndex: 999,
+                        }}
+                    >
+                        <div
+                            style={{
+                                marginRight: '14px',
+                                fontSize: '20px',
+                                lineHeight: '30px',
+                                fontWeight: '600',
+                                color: '#eeeeeee6',
+                            }}
+                        >
+              Total Miners
+                        </div>{' '}
+                        <div
+                            style={{
+                                fontSize: '24px',
+                                lineHeight: '30px',
+                                fontWeight: '600',
+                                color: '#eeeeeee6',
+                            }}
+                        >
+                            {totalData?.totalWiFiNum ?? ''}
+                        </div>
+                    </div>
+                )}
                 <GoogleMapReact
                     bootstrapURLKeys={{
                         key: process.env.NEXT_GOOGLE_MAP_API_KEY,
@@ -260,7 +288,7 @@ const App = () => {
                     zoom={2}
                     center={{ lat: 42.8566, lng: -20.3522 }}
                     yesIWantToUseGoogleMapApiInternals
-                    onGoogleApiLoaded={ async ({ map, maps }) => {
+                    onGoogleApiLoaded={async ({ map, maps }) => {
                         mapRef.current = map
                         createMyLocationButton({ map: map, maps: maps })
 
@@ -268,8 +296,7 @@ const App = () => {
                         initMarkers({ mapData: MapData, map: map, maps: maps })
                     }}
                     options={createMapOptions}
-                >
-                </GoogleMapReact>
+                ></GoogleMapReact>
             </div>
         </div>
     )
