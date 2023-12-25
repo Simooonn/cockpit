@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Select, Space } from '@arco-design/web-react'
-import * as eCharts from 'echarts'
 import {
     ChartCheckIn,
     ChartMember,
@@ -11,27 +10,34 @@ import {
 } from '@/request/api'
 import styles from '@/pages/dashboard/style/overview.module.less'
 import App from '@/pages/minerMap'
-import { array_column } from '@/utils/function'
+// import { array_column } from '@/utils/function'
+import ApexLinesChart from '@/components/Chart/line-chart'
 const Option = Select.Option
 function Overview() {
     // const [todayData, setTodayData] = useState<any>({});
-    const [ totalData, setTotalData ] = useState<any>({})
-    const [ date1, setDate1 ] = useState<string>('month')
-    const [ date3, setDate3 ] = useState<string>('month')
-    const [ date4, setDate4 ] = useState<string>('month')
-    const [ date5, setDate5 ] = useState<string>('month')
-    const [ date6, setDate6 ] = useState<string>('month')
+    // const [ totalData, setTotalData ] = useState<any>({})
+    const [ checkInChartData, setCheckInChartData ] = useState<any>([])
+    const [ appUserChartData, setAppUserChartData ] = useState<any>([])
+    const [ addedWiFiChartData, setAddedWiFiChartData ] = useState<any>([])
+    const [ issuedmPointsChartData, setIssuedmPointsChartData ] = useState<any>([])
+    const [ issuedStickersChartData, setIssuedStickersChartData ] = useState<any>([])
+
+    const [ date1, setDate1 ] = useState<string>('day')
+    const [ date3, setDate3 ] = useState<string>('day')
+    const [ date4, setDate4 ] = useState<string>('day')
+    const [ date5, setDate5 ] = useState<string>('day')
+    const [ date6, setDate6 ] = useState<string>('day')
     const [ data1, setData1 ] = useState<any>([])
     const [ data3, setData3 ] = useState<any>([])
     const [ data4, setData4 ] = useState<any>([])
     const [ data5, setData5 ] = useState<any>([])
     const [ data6, setData6 ] = useState<any>([])
-    const eChartsRef1: any = React.createRef()
+    // const eChartsRef1: any = React.createRef()
     // const eChartsRef2: any = React.createRef();
-    const eChartsRef3: any = React.createRef()
-    const eChartsRef4: any = React.createRef()
-    const eChartsRef5: any = React.createRef()
-    const eChartsRef6: any = React.createRef()
+    // const eChartsRef3: any = React.createRef()
+    // const eChartsRef4: any = React.createRef()
+    // const eChartsRef5: any = React.createRef()
+    // const eChartsRef6: any = React.createRef()
 
     const optionsDate = [
         { code: 'week', name: 'Week' },
@@ -43,33 +49,70 @@ function Overview() {
             const { code } = res
             const data = res?.data ?? {}
             if (code == 200) {
-                setTotalData(data)
+                // setTotalData(data)
+                setCheckInChartData( [ {
+                    lineName: 'Check In',
+                    totalNum: data?.totalCheckNum,
+                } ])
+                setAppUserChartData( [ {
+                    lineName: 'App User',
+                    totalNum: data?.totalMemberNum,
+                } ])
+                setAddedWiFiChartData( [ {
+                    lineName: 'New Added Wifi ',
+                    totalNum: data?.totalWiFiNum,
+                } ])
+                setIssuedmPointsChartData( [ {
+                    lineName: 'Issued mPoints',
+                    totalNum: data?.totalPointsNum,
+                } ])
+                setIssuedStickersChartData( [ {
+                    lineName: 'Issued Stickers',
+                    totalNum: data?.totalStickerNum,
+                } ])
+
+
             }
         })
 
         ChartCheckIn({ group: date1 }).then((res) => {
             if (res?.code == 200) {
-                setData1(res?.data ?? [])
+                setData1([ {
+                    name: 'Check In',
+                    data: initChartData00000(res?.data, date1, 'growth')
+                } ])
             }
         })
         ChartMember({ group: date3 }).then((res) => {
             if (res?.code == 200) {
-                setData3(res?.data ?? [])
+                setData3([ {
+                    name: 'App User',
+                    data: initChartData00000(res?.data, date3)
+                } ])
             }
         })
         ChartWifi({ group: date4 }).then((res) => {
             if (res?.code == 200) {
-                setData4(res?.data ?? [])
+                setData4([ {
+                    name: 'New Added WiFi',
+                    data: initChartData00000(res?.data, date4)
+                } ])
             }
         })
         ChartPoint({ group: date5 }).then((res) => {
             if (res?.code == 200) {
-                setData5(res?.data ?? [])
+                setData5([ {
+                    name: 'Issued mPoints',
+                    data: initChartData00000(res?.data, date5)
+                } ])
             }
         })
         ChartSticker({ group: date6 }).then((res) => {
             if (res?.code == 200) {
-                setData6(res?.data ?? [])
+                setData6([ {
+                    name: 'Issued Stickers',
+                    data: initChartData00000(res?.data, date6)
+                } ])
             }
         })
     }
@@ -82,7 +125,11 @@ function Overview() {
             }).then((res) => {
                 const { code } = res
                 if (code == 200) {
-                    setData1(res?.data ?? [])
+                    console.log('resresres',res);
+                    setData1([ {
+                        name: 'Check In',
+                        data: initChartData00000(res?.data, date1, 'growth')
+                    } ])
                 }
             })
         } else if (type === 3) {
@@ -92,7 +139,10 @@ function Overview() {
             }).then((res) => {
                 const { code } = res
                 if (code == 200) {
-                    setData3(res?.data ?? [])
+                    setData3([ {
+                        name: 'App User',
+                        data: initChartData00000(res?.data, date3)
+                    } ])
                 }
             })
         } else if (type === 4) {
@@ -102,7 +152,10 @@ function Overview() {
             }).then((res) => {
                 const { code } = res
                 if (code == 200) {
-                    setData4(res?.data ?? [])
+                    setData4([ {
+                        name: 'New Added WiFi',
+                        data: initChartData00000(res?.data, date4)
+                    } ])
                 }
             })
         } else if (type === 5) {
@@ -112,7 +165,10 @@ function Overview() {
             }).then((res) => {
                 const { code } = res
                 if (code == 200) {
-                    setData5(res?.data ?? [])
+                    setData5([ {
+                        name: 'Issued mPoints',
+                        data: initChartData00000(res?.data, date5)
+                    } ])
                 }
             })
         } else if (type === 6) {
@@ -122,10 +178,35 @@ function Overview() {
             }).then((res) => {
                 const { code } = res
                 if (code == 200) {
-                    setData6(res?.data ?? [])
+                    setData6([ {
+                        name: 'Issued Stickers',
+                        data: initChartData00000(res?.data, date6)
+                    } ])
                 }
             })
         }
+    }
+    const initChartData00000 = (data, type, dataType = 'accumulated') => {
+        const numStart = 0
+        const xData = (data ?? [])?.map((item) => {
+            return {
+                x: dateConversion(item?.date, type),
+                y: dataType === 'growth' ? item?.num : numStart + item?.num
+            }
+        })
+
+        return xData
+        // // xData = [...xData]  +'(Estimated)'
+        // let yData = []
+        // if (dataType === 'growth') {
+        //     yData = array_column(data, 'num')
+        // } else {
+        //     yData = array_column(data, 'num')?.map((ittt) => {
+        //         nnum = nnum + ittt
+        //         return nnum
+        //     })
+        // }
+        // return [ xData, yData ]
     }
 
     const dateConversion = (date = '', type = 'day') => {
@@ -138,18 +219,18 @@ function Overview() {
             const year = date.substr(0, 4)
             const dateMonth = date.slice(5)
             const month = {
-                month1: 'Jan. ' + year,
-                month2: 'Feb. ' + year,
-                month3: 'Mar. ' + year,
-                month4: 'Apr. ' + year,
-                month5: 'May. ' + year,
-                month6: 'Jun. ' + year,
-                month7: 'Jul. ' + year,
-                month8: 'Aug. ' + year,
-                month9: 'Sep. ' + year,
-                month10: 'Oct. ' + year,
-                month11: 'Nov. ' + year,
-                month12: 'Dec. ' + year,
+                month1: 'Jan ' + year,
+                month2: 'Feb ' + year,
+                month3: 'Mar ' + year,
+                month4: 'Apr ' + year,
+                month5: 'May ' + year,
+                month6: 'Jun ' + year,
+                month7: 'Jul ' + year,
+                month8: 'Aug ' + year,
+                month9: 'Sep ' + year,
+                month10: 'Oct ' + year,
+                month11: 'Nov ' + year,
+                month12: 'Dec ' + year,
             }
             data = month?.['month' + dateMonth]
         } else {
@@ -158,7 +239,7 @@ function Overview() {
         return data
     }
 
-    const initLineOption = (
+    /*  const initLineOption = (
         color,
         chartTitle,
         lineTitle,
@@ -191,7 +272,7 @@ function Overview() {
                         axisValueLabel = params[0].axisValueLabel
                     }
                     //自定义模板
-                    return ` 
+                    return `
                         <div>${axisValueLabel}</div>
                         <span style="display:inline-block;margin-right:4px;
 						border-radius:10px;width:10px;height:10px;
@@ -250,6 +331,7 @@ function Overview() {
             ],
         }
     }
+
 
     const initChartData = (data, type, dataType = 'accumulated') => {
         let nnum = 0
@@ -384,7 +466,7 @@ function Overview() {
     }, [ data5 ])
     useEffect(() => {
         initChart6()
-    }, [ data6 ])
+    }, [ data6 ])*/
     useEffect(() => {
         fetchData()
     }, [])
@@ -400,190 +482,239 @@ function Overview() {
                 </div>
                 <App></App>
             </Card>
-            <Card>
-                <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
-                    <Select
-                        // placeholder='Day'
-                        style={{ width: 100 }}
-                        size={'large'}
-                        bordered={false}
-                        defaultValue={'month'}
-                        onChange={(value) => fetchChartData(1, value)}
-                    >
-                        {optionsDate.map((option, index) => (
-                            <Option key={index} value={option.code}>
-                                {option.name}
-                            </Option>
-                        ))}
-                    </Select>
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: '50px',
-                            right: '25vw',
-                            fontSize: '16px',
-                            color: '#fff',
-                        }}
-                    >
-                        {totalData?.totalCheckNum && `Total : ${totalData?.totalCheckNum} `}
-                    </div>
-                </div>
-                <div
-                    ref={eChartsRef1}
-                    style={{
-                        width: '100%',
-                        height: 500,
-                    }}
-                ></div>
-            </Card>
+            <ApexLinesChart
+                title={'Check in Growth Quantity'}
+                totalDataList={checkInChartData}
+                chartDataList={data1}
+                lineColors={[ 'rgb(73, 146, 255)' ]}
+                dateType={date1}
+                setDateType={setDate1}
+                onChange={(value) => fetchChartData(1, value)}
+            />
+            <ApexLinesChart
+                title={'Accumulated number of App User'}
+                totalDataList={appUserChartData}
+                chartDataList={data3}
+                lineColors={[ 'rgb(73, 146, 255)' ]}
+                dateType={date3}
+                setDateType={setDate3}
+                onChange={(value) => fetchChartData(3, value)}
 
-            <Card>
-                <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
-                    <Select
-                        // placeholder='Day'
-                        style={{ width: 100 }}
-                        size={'large'}
-                        bordered={false}
-                        defaultValue={'month'}
-                        onChange={(value) => fetchChartData(3, value)}
-                    >
-                        {optionsDate.map((option, index) => (
-                            <Option key={index} value={option.code}>
-                                {option.name}
-                            </Option>
-                        ))}
-                    </Select>
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: '50px',
-                            right: '25vw',
-                            fontSize: '16px',
-                            color: '#fff',
-                        }}
-                    >
-                        {totalData?.totalMemberNum &&
-              `Total : ${totalData?.totalMemberNum} `}
-                    </div>
-                </div>
-                <div
-                    ref={eChartsRef3}
-                    style={{
-                        width: '100%',
-                        height: 500,
-                    }}
-                ></div>
-            </Card>
-            <Card>
-                <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
-                    <Select
-                        // placeholder='Day'
-                        style={{ width: 100 }}
-                        size={'large'}
-                        bordered={false}
-                        defaultValue={'month'}
-                        onChange={(value) => fetchChartData(4, value)}
-                    >
-                        {optionsDate.map((option, index) => (
-                            <Option key={index} value={option.code}>
-                                {option.name}
-                            </Option>
-                        ))}
-                    </Select>
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: '50px',
-                            right: '25vw',
-                            fontSize: '16px',
-                            color: '#fff',
-                        }}
-                    >
-                        {totalData?.totalWiFiNum && `Total : ${totalData?.totalWiFiNum} `}
-                    </div>
-                </div>
-                <div
-                    ref={eChartsRef4}
-                    style={{
-                        width: '100%',
-                        height: 500,
-                    }}
-                ></div>
-            </Card>
-            <Card>
-                <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
-                    <Select
-                        // placeholder='Day'
-                        style={{ width: 100 }}
-                        size={'large'}
-                        bordered={false}
-                        defaultValue={'month'}
-                        onChange={(value) => fetchChartData(5, value)}
-                    >
-                        {optionsDate.map((option, index) => (
-                            <Option key={index} value={option.code}>
-                                {option.name}
-                            </Option>
-                        ))}
-                    </Select>
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: '50px',
-                            right: '25vw',
-                            fontSize: '16px',
-                            color: '#fff',
-                        }}
-                    >
-                        {totalData?.totalPointsNum &&
-              `Total : ${totalData?.totalPointsNum} `}
-                    </div>
-                </div>
-                <div
-                    ref={eChartsRef5}
-                    style={{
-                        width: '100%',
-                        height: 500,
-                    }}
-                ></div>
-            </Card>
-            <Card>
-                <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>
-                    <Select
-                        // placeholder='Day'
-                        style={{ width: 100 }}
-                        size={'large'}
-                        bordered={false}
-                        defaultValue={'month'}
-                        onChange={(value) => fetchChartData(6, value)}
-                    >
-                        {optionsDate.map((option, index) => (
-                            <Option key={index} value={option.code}>
-                                {option.name}
-                            </Option>
-                        ))}
-                    </Select>
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: '50px',
-                            right: '25vw',
-                            fontSize: '16px',
-                            color: '#fff',
-                        }}
-                    >
-                        {totalData?.totalStickerNum &&
-              `Total : ${totalData?.totalStickerNum} `}
-                    </div>
-                </div>
-                <div
-                    ref={eChartsRef6}
-                    style={{
-                        width: '100%',
-                        height: 500,
-                    }}
-                ></div>
-            </Card>
+            />
+            <ApexLinesChart
+                title={'Accumulated number of New Added WiFi'}
+                totalDataList={addedWiFiChartData}
+                chartDataList={data4}
+                lineColors={[ 'rgb(73, 146, 255)' ]}
+                dateType={date4}
+                setDateType={setDate4}
+                onChange={(value) => fetchChartData(4, value)}
+
+            />
+            <ApexLinesChart
+                title={'Accumulated number of Issued mPoints'}
+                totalDataList={issuedmPointsChartData}
+                chartDataList={data5}
+                lineColors={[ 'rgb(73, 146, 255)' ]}
+                dateType={date5}
+                setDateType={setDate5}
+                onChange={(value) => fetchChartData(5, value)}
+
+            />
+            <ApexLinesChart
+                title={'Accumulated number of Issued Stickers'}
+                totalDataList={issuedStickersChartData}
+                chartDataList={data6}
+                lineColors={[ 'rgb(73, 146, 255)' ]}
+                dateType={date6}
+                setDateType={setDate6}
+                onChange={(value) => fetchChartData(6, value)}
+
+            />
+            {/*<Card>*/}
+            {/*    <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>*/}
+            {/*        <Select*/}
+            {/*            // placeholder='Day'*/}
+            {/*            style={{ width: 100 }}*/}
+            {/*            size={'large'}*/}
+            {/*            bordered={false}*/}
+            {/*            defaultValue={'month'}*/}
+            {/*            onChange={(value) => fetchChartData(1, value)}*/}
+            {/*        >*/}
+            {/*            {optionsDate.map((option, index) => (*/}
+            {/*                <Option key={index} value={option.code}>*/}
+            {/*                    {option.name}*/}
+            {/*                </Option>*/}
+            {/*            ))}*/}
+            {/*        </Select>*/}
+            {/*        <div*/}
+            {/*            style={{*/}
+            {/*                position: 'absolute',*/}
+            {/*                top: '50px',*/}
+            {/*                right: '25vw',*/}
+            {/*                fontSize: '16px',*/}
+            {/*                color: '#fff',*/}
+            {/*            }}*/}
+            {/*        >*/}
+            {/*            {totalData?.totalCheckNum && `Total : ${totalData?.totalCheckNum} `}*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*    <div*/}
+            {/*        ref={eChartsRef1}*/}
+            {/*        style={{*/}
+            {/*            width: '100%',*/}
+            {/*            height: 500,*/}
+            {/*        }}*/}
+            {/*    ></div>*/}
+            {/*</Card>*/}
+
+            {/*<Card>*/}
+            {/*    <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>*/}
+            {/*        <Select*/}
+            {/*            // placeholder='Day'*/}
+            {/*            style={{ width: 100 }}*/}
+            {/*            size={'large'}*/}
+            {/*            bordered={false}*/}
+            {/*            defaultValue={'month'}*/}
+            {/*            onChange={(value) => fetchChartData(3, value)}*/}
+            {/*        >*/}
+            {/*            {optionsDate.map((option, index) => (*/}
+            {/*                <Option key={index} value={option.code}>*/}
+            {/*                    {option.name}*/}
+            {/*                </Option>*/}
+            {/*            ))}*/}
+            {/*        </Select>*/}
+            {/*        <div*/}
+            {/*            style={{*/}
+            {/*                position: 'absolute',*/}
+            {/*                top: '50px',*/}
+            {/*                right: '25vw',*/}
+            {/*                fontSize: '16px',*/}
+            {/*                color: '#fff',*/}
+            {/*            }}*/}
+            {/*        >*/}
+            {/*            {totalData?.totalMemberNum &&*/}
+            {/*  `Total : ${totalData?.totalMemberNum} `}*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*    <div*/}
+            {/*        ref={eChartsRef3}*/}
+            {/*        style={{*/}
+            {/*            width: '100%',*/}
+            {/*            height: 500,*/}
+            {/*        }}*/}
+            {/*    ></div>*/}
+            {/*</Card>*/}
+            {/*<Card>*/}
+            {/*    <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>*/}
+            {/*        <Select*/}
+            {/*            // placeholder='Day'*/}
+            {/*            style={{ width: 100 }}*/}
+            {/*            size={'large'}*/}
+            {/*            bordered={false}*/}
+            {/*            defaultValue={'month'}*/}
+            {/*            onChange={(value) => fetchChartData(4, value)}*/}
+            {/*        >*/}
+            {/*            {optionsDate.map((option, index) => (*/}
+            {/*                <Option key={index} value={option.code}>*/}
+            {/*                    {option.name}*/}
+            {/*                </Option>*/}
+            {/*            ))}*/}
+            {/*        </Select>*/}
+            {/*        <div*/}
+            {/*            style={{*/}
+            {/*                position: 'absolute',*/}
+            {/*                top: '50px',*/}
+            {/*                right: '25vw',*/}
+            {/*                fontSize: '16px',*/}
+            {/*                color: '#fff',*/}
+            {/*            }}*/}
+            {/*        >*/}
+            {/*            {totalData?.totalWiFiNum && `Total : ${totalData?.totalWiFiNum} `}*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*    <div*/}
+            {/*        ref={eChartsRef4}*/}
+            {/*        style={{*/}
+            {/*            width: '100%',*/}
+            {/*            height: 500,*/}
+            {/*        }}*/}
+            {/*    ></div>*/}
+            {/*</Card>*/}
+            {/*<Card>*/}
+            {/*    <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>*/}
+            {/*        <Select*/}
+            {/*            // placeholder='Day'*/}
+            {/*            style={{ width: 100 }}*/}
+            {/*            size={'large'}*/}
+            {/*            bordered={false}*/}
+            {/*            defaultValue={'month'}*/}
+            {/*            onChange={(value) => fetchChartData(5, value)}*/}
+            {/*        >*/}
+            {/*            {optionsDate.map((option, index) => (*/}
+            {/*                <Option key={index} value={option.code}>*/}
+            {/*                    {option.name}*/}
+            {/*                </Option>*/}
+            {/*            ))}*/}
+            {/*        </Select>*/}
+            {/*        <div*/}
+            {/*            style={{*/}
+            {/*                position: 'absolute',*/}
+            {/*                top: '50px',*/}
+            {/*                right: '25vw',*/}
+            {/*                fontSize: '16px',*/}
+            {/*                color: '#fff',*/}
+            {/*            }}*/}
+            {/*        >*/}
+            {/*            {totalData?.totalPointsNum &&*/}
+            {/*  `Total : ${totalData?.totalPointsNum} `}*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*    <div*/}
+            {/*        ref={eChartsRef5}*/}
+            {/*        style={{*/}
+            {/*            width: '100%',*/}
+            {/*            height: 500,*/}
+            {/*        }}*/}
+            {/*    ></div>*/}
+            {/*</Card>*/}
+            {/*<Card>*/}
+            {/*    <div className="flex flex-row-reverse" style={{ marginRight: '8vw' }}>*/}
+            {/*        <Select*/}
+            {/*            // placeholder='Day'*/}
+            {/*            style={{ width: 100 }}*/}
+            {/*            size={'large'}*/}
+            {/*            bordered={false}*/}
+            {/*            defaultValue={'month'}*/}
+            {/*            onChange={(value) => fetchChartData(6, value)}*/}
+            {/*        >*/}
+            {/*            {optionsDate.map((option, index) => (*/}
+            {/*                <Option key={index} value={option.code}>*/}
+            {/*                    {option.name}*/}
+            {/*                </Option>*/}
+            {/*            ))}*/}
+            {/*        </Select>*/}
+            {/*        <div*/}
+            {/*            style={{*/}
+            {/*                position: 'absolute',*/}
+            {/*                top: '50px',*/}
+            {/*                right: '25vw',*/}
+            {/*                fontSize: '16px',*/}
+            {/*                color: '#fff',*/}
+            {/*            }}*/}
+            {/*        >*/}
+            {/*            {totalData?.totalStickerNum &&*/}
+            {/*  `Total : ${totalData?.totalStickerNum} `}*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*    <div*/}
+            {/*        ref={eChartsRef6}*/}
+            {/*        style={{*/}
+            {/*            width: '100%',*/}
+            {/*            height: 500,*/}
+            {/*        }}*/}
+            {/*    ></div>*/}
+            {/*</Card>*/}
         </Space>
     )
 }
