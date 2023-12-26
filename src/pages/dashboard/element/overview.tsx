@@ -192,14 +192,37 @@ function Overview() {
             }).then((res) => {
                 const { code } = res
                 if (code == 200) {
+                    const issuedData = formatData({ data: res?.data?.issued, type: date5 })
+                    const burnedDataYTT = formatData({ data: res?.data?.burned, type: date5, isPositiveValue: true })
+                    const tempBalanceData = {}
+                    const tempIssuedData = array_column(issuedData, null, 'x')
+                    const tempBurnedData = array_column(burnedDataYTT, null, 'x')
+                    let burnedData = []
+                    let balanceData = []
+                    for (const key in tempIssuedData) {
+                        const value = tempIssuedData[key]
+                        if(!tempBurnedData?.[key]){
+                            tempBurnedData[key] = { x: key, y: 0 }
+                        }
+                        tempBalanceData[key] ={ x: key, y: value?.y - tempBurnedData?.[key]?.y }
+                    }
+                    issuedData.map((item, index) => {
+                        burnedData = [ ...burnedData, tempBurnedData?.[item?.x] ]
+                        balanceData = [ ...balanceData, tempBalanceData?.[item?.x] ]
+                    })
+
                     setData5([
                         {
                             name: 'Issued mPoints',
-                            data: formatData({ data: res?.data?.issued, type: dateeee })
+                            data: issuedData
                         },
                         {
                             name: 'Burned mPoints',
-                            data: formatData({ data: res?.data?.burned, type: dateeee, isPositiveValue: true })
+                            data: burnedData
+                        },
+                        {
+                            name: 'Remaining mPoints',
+                            data: balanceData
                         },
                     ])
                 }
@@ -211,6 +234,7 @@ function Overview() {
             }).then((res) => {
                 const { code } = res
                 if (code == 200) {
+                    console.log('res?.dataaaaaaaaa', formatData({ data: res?.data, type: dateeee }))
                     setData6([ {
                         name: 'Issued Stickers',
                         data: formatData({ data: res?.data, type: dateeee })
@@ -224,50 +248,15 @@ function Overview() {
         const xData = (data ?? [])?.map((item) => {
             numTotal = isPositiveValue ?Math.abs(numTotal) +Math.abs(item?.num) : numTotal + item?.num
             return {
-                x: dateConversion(item?.date, type),
-                y: dataType === 'growth' ? (isPositiveValue ?Math.abs(item?.num) : item?.num) : numTotal
+                // x: dateConversion(item?.date, type),
+                x: item?.date,
+                y: dataType === 'growth' ? (isPositiveValue ?Math.abs(item?.num) : item?.num) : numTotal,
+                // curve: [10, 10, 10, 10 ],
+                curve: [ 0.5, 0, 0.5, 1 ]
             }
         })
 
         return xData
-    }
-
-    const dateConversion = (date = '', type = 'day') => {
-        // const getWeekNumber = (date = '2023-12-26') => {
-        //     const d = new Date(date)
-        //     const onejan = new Date(d.getFullYear(), 0, 1)
-        //     const week = Math.ceil(((d - onejan) / 86400000 + onejan.getDay() + 1) / 7)
-        //     return week
-        // }
-        // console.log('getWeekNumber',getWeekNumber());
-        return date
-        let data = ''
-        if (type === 'day') {
-            data = date.replaceAll('-', '.')
-        } else if (type === 'week') {
-            data = 'Week' + date.substr(5, 2) + ',' + date.substr(0, 4)
-        } else if (type === 'month') {
-            const year = date.substr(0, 4)
-            const dateMonth = date.slice(5)
-            const month = {
-                month1: 'Jan ' + year,
-                month2: 'Feb ' + year,
-                month3: 'Mar ' + year,
-                month4: 'Apr ' + year,
-                month5: 'May ' + year,
-                month6: 'Jun ' + year,
-                month7: 'Jul ' + year,
-                month8: 'Aug ' + year,
-                month9: 'Sep ' + year,
-                month10: 'Oct ' + year,
-                month11: 'Nov ' + year,
-                month12: 'Dec ' + year,
-            }
-            data = month?.['month' + dateMonth]
-        } else {
-            data = date
-        }
-        return data
     }
 
     useEffect(() => {
