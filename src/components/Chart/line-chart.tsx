@@ -34,6 +34,12 @@ function ApexLinesChart({
         // 'Year',
     ]
 
+    const xFormat = {
+        day: 'dd MMM yyyy',
+        week: 'dd MM yyyy',
+        month: 'MMM yyyy',
+    }
+
     /** ApexChart */
     const chartOptions: any = {
         options: {
@@ -76,7 +82,8 @@ function ApexLinesChart({
                     },
                     // datetimeFormatter: {
                     //     year: 'yyyy',
-                    //     month: 'MMM \'yy',
+                    //     month: 'MM \'yyyy',
+                    //     day: 'dd',
                     // },
                 },
                 axisBorder: {
@@ -87,9 +94,9 @@ function ApexLinesChart({
                     offsetX: 0,
                     offsetY: 0,
                 },
-                tooltip: {
-                    enabled: true,
-                },
+                // tooltip: {
+                //     enabled: true,
+                // },
             },
             yaxis: {
                 lines: {
@@ -165,6 +172,11 @@ function ApexLinesChart({
                 style: {
                     fontSize: '11px',
                     colors: '#78909C',
+                },
+                x: {
+                    show: true,
+                    format: xFormat[dateType],
+                    formatter: undefined,
                 },
             },
             noData: {

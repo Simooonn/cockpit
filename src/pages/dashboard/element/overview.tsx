@@ -11,11 +11,13 @@ import {
 import styles from '@/pages/dashboard/style/overview.module.less'
 import App from '@/pages/minerMap'
 import ApexLinesChart from '@/components/Chart/line-chart'
+import { array_column } from '@/utils/function'
 function Overview() {
     const [ checkInChartData, setCheckInChartData ] = useState<any>([])
     const [ appUserChartData, setAppUserChartData ] = useState<any>([])
     const [ addedWiFiChartData, setAddedWiFiChartData ] = useState<any>([])
-    const [ issuedmPointsChartData, setIssuedmPointsChartData ] = useState<any>([])
+    const [ mPointsChartData, setMPointsChartData ] = useState<any>([])
+
     const [ issuedStickersChartData, setIssuedStickersChartData ] = useState<any>([])
 
     const [ date1, setDate1 ] = useState<string>('day')
@@ -47,10 +49,21 @@ function Overview() {
                     lineName: 'New Added Wifi ',
                     totalNum: data?.totalWiFiNum,
                 } ])
-                setIssuedmPointsChartData( [ {
-                    lineName: 'Issued mPoints',
-                    totalNum: data?.totalPointsNum,
-                } ])
+
+                setMPointsChartData( [
+                    {
+                        lineName: 'Issued mPoints',
+                        totalNum: data?.totalIssuedPointsNum,
+                    },
+                    {
+                        lineName: 'Burned mPoints',
+                        totalNum: Math.abs(data?.totalBurnedPointsNum),
+                    },
+                    {
+                        lineName: 'Remaining mPoints',
+                        totalNum: data?.totalIssuedPointsNum + data?.totalBurnedPointsNum,
+                    }
+                ])
                 setIssuedStickersChartData( [ {
                     lineName: 'Issued Stickers',
                     totalNum: data?.totalStickerNum,
@@ -64,7 +77,7 @@ function Overview() {
             if (res?.code == 200) {
                 setData1([ {
                     name: 'Check In',
-                    data: initChartData00000(res?.data, date1, 'growth')
+                    data: formatData({ data: res?.data, type: date1, dataType: 'growth' })
                 } ])
             }
         })
@@ -72,7 +85,7 @@ function Overview() {
             if (res?.code == 200) {
                 setData3([ {
                     name: 'App User',
-                    data: initChartData00000(res?.data, date3)
+                    data: formatData({ data: res?.data, type: date3 })
                 } ])
             }
         })
@@ -80,23 +93,52 @@ function Overview() {
             if (res?.code == 200) {
                 setData4([ {
                     name: 'New Added WiFi',
-                    data: initChartData00000(res?.data, date4)
+                    data: formatData({ data: res?.data, type: date4 })
                 } ])
             }
         })
         ChartPoint({ group: date5 }).then((res) => {
             if (res?.code == 200) {
-                setData5([ {
-                    name: 'Issued mPoints',
-                    data: initChartData00000(res?.data, date5)
-                } ])
+                const issuedData = formatData({ data: res?.data?.issued, type: date5 })
+                const burnedDataYTT = formatData({ data: res?.data?.burned, type: date5, isPositiveValue: true })
+                const tempBalanceData = {}
+                const tempIssuedData = array_column(issuedData, null, 'x')
+                const tempBurnedData = array_column(burnedDataYTT, null, 'x')
+                let burnedData = []
+                let balanceData = []
+                for (const key in tempIssuedData) {
+                    const value = tempIssuedData[key]
+                    if(!tempBurnedData?.[key]){
+                        tempBurnedData[key] = { x: key, y: 0 }
+                    }
+                    tempBalanceData[key] ={ x: key, y: value?.y - tempBurnedData?.[key]?.y }
+                }
+                issuedData.map((item, index) => {
+                    burnedData = [ ...burnedData, tempBurnedData?.[item?.x] ]
+                    balanceData = [ ...balanceData, tempBalanceData?.[item?.x] ]
+                })
+
+                setData5([
+                    {
+                        name: 'Issued mPoints',
+                        data: issuedData
+                    },
+                    {
+                        name: 'Burned mPoints',
+                        data: burnedData
+                    },
+                    {
+                        name: 'Remaining mPoints',
+                        data: balanceData
+                    },
+                ])
             }
         })
         ChartSticker({ group: date6 }).then((res) => {
             if (res?.code == 200) {
                 setData6([ {
                     name: 'Issued Stickers',
-                    data: initChartData00000(res?.data, date6)
+                    data: formatData({ data: res?.data, type: date6 })
                 } ])
             }
         })
@@ -110,9 +152,10 @@ function Overview() {
             }).then((res) => {
                 const { code } = res
                 if (code == 200) {
+                    // console.log('Check In dateeee',formatData({ data: res?.data, type: dateeee, dataType: 'growth' }));
                     setData1([ {
                         name: 'Check In',
-                        data: initChartData00000(res?.data, dateeee, 'growth')
+                        data: formatData({ data: res?.data, type: dateeee, dataType: 'growth' })
                     } ])
                 }
             })
@@ -125,7 +168,7 @@ function Overview() {
                 if (code == 200) {
                     setData3([ {
                         name: 'App User',
-                        data: initChartData00000(res?.data, dateeee)
+                        data: formatData({ data: res?.data, type: dateeee })
                     } ])
                 }
             })
@@ -138,7 +181,7 @@ function Overview() {
                 if (code == 200) {
                     setData4([ {
                         name: 'New Added WiFi',
-                        data: initChartData00000(res?.data, dateeee)
+                        data: formatData({ data: res?.data, type: dateeee })
                     } ])
                 }
             })
@@ -149,10 +192,16 @@ function Overview() {
             }).then((res) => {
                 const { code } = res
                 if (code == 200) {
-                    setData5([ {
-                        name: 'Issued mPoints',
-                        data: initChartData00000(res?.data, dateeee)
-                    } ])
+                    setData5([
+                        {
+                            name: 'Issued mPoints',
+                            data: formatData({ data: res?.data?.issued, type: dateeee })
+                        },
+                        {
+                            name: 'Burned mPoints',
+                            data: formatData({ data: res?.data?.burned, type: dateeee, isPositiveValue: true })
+                        },
+                    ])
                 }
             })
         } else if (type === 6) {
@@ -164,18 +213,19 @@ function Overview() {
                 if (code == 200) {
                     setData6([ {
                         name: 'Issued Stickers',
-                        data: initChartData00000(res?.data, dateeee)
+                        data: formatData({ data: res?.data, type: dateeee })
                     } ])
                 }
             })
         }
     }
-    const initChartData00000 = (data, type, dataType = 'accumulated') => {
-        const numStart = 0
+    const formatData = ({ data, type, dataType = 'accumulated', isPositiveValue=false }) => {
+        let numTotal = 0
         const xData = (data ?? [])?.map((item) => {
+            numTotal = isPositiveValue ?Math.abs(numTotal) +Math.abs(item?.num) : numTotal + item?.num
             return {
                 x: dateConversion(item?.date, type),
-                y: dataType === 'growth' ? item?.num : numStart + item?.num
+                y: dataType === 'growth' ? (isPositiveValue ?Math.abs(item?.num) : item?.num) : numTotal
             }
         })
 
@@ -183,6 +233,14 @@ function Overview() {
     }
 
     const dateConversion = (date = '', type = 'day') => {
+        // const getWeekNumber = (date = '2023-12-26') => {
+        //     const d = new Date(date)
+        //     const onejan = new Date(d.getFullYear(), 0, 1)
+        //     const week = Math.ceil(((d - onejan) / 86400000 + onejan.getDay() + 1) / 7)
+        //     return week
+        // }
+        // console.log('getWeekNumber',getWeekNumber());
+        return date
         let data = ''
         if (type === 'day') {
             data = date.replaceAll('-', '.')
@@ -215,7 +273,6 @@ function Overview() {
     useEffect(() => {
         fetchData()
     }, [])
-
     return (
         <Space size={16} direction="vertical" style={{ width: '100%' }}>
             <Card>
@@ -256,9 +313,9 @@ function Overview() {
             />
             <ApexLinesChart
                 title={'Accumulated number of Issued mPoints'}
-                totalDataList={issuedmPointsChartData}
+                totalDataList={mPointsChartData}
                 chartDataList={data5}
-                lineColors={[ 'rgb(88, 217, 249)' ]}
+                // lineColors={[ 'rgb(88, 217, 249)' ]}
                 dateType={date5}
                 setDateType={setDate5}
                 onChange={(value) => fetchChartData(5, value)}
@@ -272,6 +329,7 @@ function Overview() {
                 setDateType={setDate6}
                 onChange={(value) => fetchChartData(6, value)}
             />
+
         </Space>
     )
 }

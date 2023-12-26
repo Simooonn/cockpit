@@ -401,4 +401,12 @@ export function capitalizeFirstLetter(str) {
     return str.slice(0, 1).toUpperCase() + str.slice(1)
 }
 
+export function array_values(obj:object){
+    const keys = Object.keys(obj)
+    return keys.reduce((acc, key) => {
+        acc.push(obj[key])
+        return acc
+    }, [])
+}
+
 export {}
