@@ -11,6 +11,7 @@ import {
 import styles from '@/pages/dashboard/style/overview.module.less'
 import App from '@/pages/minerMap'
 import { array_column } from '@/utils/function'
+import moment from 'moment'
 const Option = Select.Option
 function Overview() {
     // const [todayData, setTodayData] = useState<any>({});
@@ -139,7 +140,14 @@ function Overview() {
             data = date.replaceAll('-', '.')
         }
         else if(type === 'week'){
-            data = 'Week'+date.substr(5, 2)+','+date.substr(0, 4)
+            if(date === '2023-52'){
+                data ='Week'+ moment('2023-12-25').format('ww YYYY')
+            }
+            else {
+                data ='Week'+ moment(date).format('ww YYYY')
+            }
+
+            // data = 'Week'+date.substr(5, 2)+','+date.substr(0, 4)
         }
         else if(type === 'month'){
             const year = date.substr(0, 4)
