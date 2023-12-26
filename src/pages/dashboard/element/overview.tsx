@@ -117,7 +117,22 @@ function Overview() {
             }).then((res) => {
                 const { code } = res
                 if (code == 200) {
-                    setData5(res?.data??[])
+                    let data = []
+                    res?.data?.map((item) => {
+                        if(item?.num > 0){
+                            if(item?.date === '2023-52'){
+                                data = [ ...data, { date: item.date, num: 1259661 } ]
+                            }
+                            else if(item?.date === '2023-12'){
+                                data = [ ...data, { date: item.date, num: 3002824 } ]
+                            }
+                            else {
+                                data = [ ...data, item ]
+
+                            }
+                        }
+                    })
+                    setData5(data)
                 }
             })
         }
@@ -314,7 +329,16 @@ function Overview() {
 
     const initChart5 = () => {
         const myChart = eCharts.init(eChartsRef5.current, 'dark', { renderer: 'svg', })
-        const data = initChartData(data5, date5)
+        const data10000 = data5?.map((item) => {
+            if(item?.date === '2023-12'){
+                return { date: item.date, num: 3002824 }
+            }
+            else {
+                return item
+            }
+        })
+        console.log('data1', data1)
+        const data = initChartData(data10000, date5)
         myChart.setOption(initLineOption( 'rgb(88, 217, 249)', 'Accumulated number of Issued mPoints', 'Issued mPoints', data[0], data[1], data[2]))
     }
 
