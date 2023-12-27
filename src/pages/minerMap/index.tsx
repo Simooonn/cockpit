@@ -7,7 +7,6 @@ import { MarkerClusterer } from '@googlemaps/markerclusterer'
 import { Cluster } from '@googlemaps/markerclusterer/dist/cluster'
 import { ClusterStats } from '@googlemaps/markerclusterer/dist/renderer'
 import { ChartTotal, minerMapView } from '@/request/api'
-
 const initMinerMapData = (data: any) => {
     if (!data) {
         return []
@@ -29,19 +28,6 @@ const initMinerMapData = (data: any) => {
         mInfo.city && (arrAddress = [ ...arrAddress, mInfo.city ])
         mInfo.streetName && (arrAddress = [ ...arrAddress, mInfo.streetName ])
         mInfo.floor && (arrAddress = [ ...arrAddress, mInfo.floor ])
-        // let logo = elem.logo
-        // if(!logo){
-        //     if(elem?.shareWiFiInfo){
-        //         console.log('aa');
-        //         logo = ImgShareWifi?.src
-        //     }
-        //     else{
-        //         console.log('bb');
-        //         logo = ImgMetablox?.src
-        //     }
-        // }
-        //
-        // console.log('logo',logo);
 
         return {
             minerId: elem.minerId,
@@ -61,7 +47,7 @@ const App = () => {
     // setup map
     const mapRef = useRef<any>()
 
-    const createMapOptions = (/*maps*/) => {
+    const createMapOptions = (maps) => {
         return {
             mapId: '1075f7ed7a304773',
             minZoom: 2,
@@ -95,7 +81,6 @@ const App = () => {
                 data = [ ...data, ...(re0?.data?.list ?? []) ]
             }
         }
-        // setMinerMapData(data);
         return data
     }
 
@@ -236,7 +221,7 @@ const App = () => {
 
     return (
         <div className="flex justify-center">
-            <div style={{ height: '80vh', width: '90%', marginTop: '2vh' }}>
+            <div id={'metablox_google_map_dashboard'} style={{ height: '80vh', width: '90%', marginTop: '2vh' }}>
                 {totalData?.totalWiFiNum && (
                     <div
                         className="flex flex-row"
@@ -271,6 +256,8 @@ const App = () => {
                     </div>
                 )}
                 <GoogleMapReact
+                    id={'aaaaaaa'}
+                    className={'bbbbbb'}
                     bootstrapURLKeys={{
                         key: process.env.NEXT_GOOGLE_MAP_API_KEY,
                         libraries: [
@@ -296,6 +283,12 @@ const App = () => {
                         initMarkers({ mapData: MapData, map: map, maps: maps })
                     }}
                     options={createMapOptions}
+                    bounds={{
+                        north: 90, // 矩形区域的北边界（纬度值）
+                        south: -90, // 矩形区域的南边界（纬度值）
+                        east: 90, // 矩形区域的东边界（经度值）
+                        west: -90// 矩形区域的西边界（经度值）
+                    }}
                 ></GoogleMapReact>
             </div>
         </div>

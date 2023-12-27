@@ -80,11 +80,15 @@ function ApexLinesChart({
                 style: {
                     colors: '#ffffff80',
                 },
-                // datetimeFormatter: {
-                //     year: 'yyyy',
-                //     month: 'MM \'yyyy',
-                //     day: 'dd',
+                // formatter: function (value) {
+                //     return moment(value).format('DD/MM/yyyy')
                 // },
+                datetimeUTC: true,
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yyyy',
+                    day: 'dd MMM',
+                },
             },
             axisBorder: {
                 show: true,
@@ -179,7 +183,6 @@ function ApexLinesChart({
     const [ chartOptions, setChartOptions ] = useState<any>(chartOptionsInit)
 
     const updateOptions = (item) => {
-        console.log('item222', item)
         let option = {
             ...chartOptions,
             tooltip: {
@@ -188,10 +191,6 @@ function ApexLinesChart({
                     ...chartOptions.tooltip.x,
                     format: '',
                     formatter: function (value) {
-                        // console.log('dateType', dateType)
-                        console.log('value', value)
-                        console.log('item', item)
-
                         let date
                         if(item === 'month'){
                             date = moment(value).format('MMM YYYY')
@@ -205,8 +204,6 @@ function ApexLinesChart({
                         else{
                             date = moment(value).format('dd/MM/yyyy')
                         }
-                        console.log('date22222', date)
-
                         return date
                     },
                 }
@@ -226,16 +223,10 @@ function ApexLinesChart({
             }
 
         }
-        console.log('option', option)
-
         setChartOptions(option)
 
 
     }
-
-    // useEffect(() => {
-    //     updateOptions()
-    // }, [dateType])
 
 
     return (
@@ -289,31 +280,46 @@ function ApexLinesChart({
                         justifyContent: 'end',
                     }}
                 >
-                    {totalDataList?.map((data, index) => (
-                        <div
-                            key={index}
-                            style={{
-                                backgroundColor: '#ffffff15',
-                                borderRadius: '10px',
-                                border: '1px solid #ffffff10',
-                                padding: '10px 30px',
-                                marginLeft: '8px',
-                            }}
+                    {totalDataList?.length == 0
+                        ?<div style={{
+                            width: '88.23px',
+                            height: '43.5px',
+                            backgroundColor: '#ffffff15',
+                            borderRadius: '10px',
+                            border: '1px solid #ffffff10',
+                            padding: '10px 30px',
+                            marginLeft: '8px',
+                            textAlign: 'center',
+                            lineHeight: '43.5px'
+                        }}
                         >
-                            <span
+                            Loading...
+                        </div>
+                        :totalDataList?.map((data, index) => (
+                            <div
+                                key={index}
                                 style={{
-                                    fontSize: '12px',
-                                    color: '#e3e3e380',
-                                    fontWeight: 'semiBold',
-                                    display: 'block',
+                                    backgroundColor: '#ffffff15',
+                                    borderRadius: '10px',
+                                    border: '1px solid #ffffff10',
+                                    padding: '10px 30px',
+                                    marginLeft: '8px',
                                 }}
                             >
-                                {data?.lineName}
-                            </span>
-                            <span style={{ fontSize: '12px', color: '#e3e3e3', fontWeight: 'bold' }}>Total </span>
-                            <span style={{ fontSize: '17px', color: '#e3e3e3', fontWeight: 'bold' }}>{data?.totalNum?.toLocaleString()}</span>
-                        </div>
-                    ))}
+                                <span
+                                    style={{
+                                        fontSize: '12px',
+                                        color: '#e3e3e380',
+                                        fontWeight: 'semiBold',
+                                        display: 'block',
+                                    }}
+                                >
+                                    {data?.lineName}
+                                </span>
+                                <span style={{ fontSize: '12px', color: '#e3e3e3', fontWeight: 'bold' }}>Total </span>
+                                <span style={{ fontSize: '17px', color: '#e3e3e3', fontWeight: 'bold' }}>{data?.totalNum?.toLocaleString()}</span>
+                            </div>
+                        ))}
                 </div>
                 <div style={{ width: '100%', maxWidth: '100%' }}>
                     <ApexCharts
@@ -322,7 +328,6 @@ function ApexLinesChart({
                         type="area"
                         height={500}
                     />
-                    <button onClick={updateOptions}>更新图表选项</button>
                 </div>
             </div>
         </Card>

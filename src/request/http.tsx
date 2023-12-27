@@ -64,16 +64,16 @@ instance.interceptors.response.use(
     // hide()
         if (response.status === 200) {
             if (response.data.code === 401 || response.data.code === 403) {
-                console.log('response400', response)
+                // console.log('response400', response)
                 // clearAccount();
                 // Router.push(LOGIN);
             } else {
-                console.log('response200', response)
+                // console.log('response200', response)
             }
 
             return Promise.resolve(response.data)
         } else {
-            console.log('response！200', response)
+            // console.log('response！200', response)
             // message.error('Response timeout')
             return Promise.reject(response.data.message)
         }
@@ -88,7 +88,7 @@ instance.interceptors.response.use(
             //     return Promise.reject(error.response.data)
             // }
             if (error.response.status === 401) {
-                console.log('error.response400', error.response)
+                // console.log('error.response400', error.response)
 
                 // If the token or login fails, you can jump to the login page. According to the actual situation, you can do the corresponding things here according to different response error results. Take 401 judgment as an example
                 // Jump to the login page for the framework
@@ -96,17 +96,17 @@ instance.interceptors.response.use(
                 // clearAccount();
                 // Router.push(LOGIN);
             } else if (error.response.status === 500) {
-                console.log('error.response500', error.response)
+                // console.log('error.response500', error.response)
 
                 error.response.data.msg = 'Internal Server Error'
             } else {
-                console.log('error.response1else', error.response)
+                // console.log('error.response1else', error.response)
 
                 return Promise.reject(error.response.data)
             }
             return Promise.reject(error)
         } else {
-            console.log('error.response2', error.response)
+            // console.log('error.response2', error.response)
 
             // message.error('Request timeout, please refresh and try again')
             return Promise.reject('Request timeout, please refresh and try again')
