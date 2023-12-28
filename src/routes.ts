@@ -24,6 +24,10 @@ export const routes: IRoute[] = [
         name: 'label.demo',
         key: 'demo',
     },
+    {
+        name: 'label.demo2',
+        key: 'demo2',
+    },
 ]
 
 export const getName = (path: string, routes) => {
