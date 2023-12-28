@@ -320,9 +320,9 @@ export function api_url() {
         else {
             wUrl = ''
         }
-        return wUrl + '/v1/admin'
+        return wUrl + '/v1/explorer'
     } else {
-        return '/v1/admin'
+        return '/v1/explorer'
     }
 }
 
