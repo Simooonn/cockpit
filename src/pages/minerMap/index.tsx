@@ -56,7 +56,7 @@ const App = () => {
     }
 
     const initMapData = async () => {
-    //init miner map data
+        //init miner map data
         const formData = {
             latitude: 0,
             longitude: 0,
@@ -88,15 +88,19 @@ const App = () => {
         const infowindow = new maps.InfoWindow({
             content: '',
         })
-
+        // 创建自定义标记的图标
+        const icon = {
+            url: '/wifi-location.png',
+            // scaledSize: maps.Size('2.4px', '3.5px')
+        }
         // Add some markers to the map.
         const markers = initMinerMapData(mapData)?.map((miner) => {
             const position = {
                 lat: miner?.lat ?? 0,
                 lng: miner?.lng ?? 0,
             }
-            const markerTag = document.createElement('div')
-            markerTag.className = 'advanced-marker-tag'
+            // const markerTag = document.createElement('div')
+            // markerTag.className = 'advanced-marker-tag'
             // if(miner.logo0 !== ''){
             //     const markerTag1 = document.createElement('img')
             //     markerTag1.className = 'advanced-marker-tag-img'
@@ -104,31 +108,37 @@ const App = () => {
             //     markerTag.append(markerTag1)
             // }
 
-            const marker = new maps.marker.AdvancedMarkerElement({
-                map,
+            const marker = new maps.Marker({
                 position,
-                content: markerTag,
+                icon,
+                // label: 'aaaaaaaaa',
             })
+
+            // const marker = new maps.marker.AdvancedMarkerElement({
+            //     map,
+            //     position,
+            //     // content: markerTag,
+            // })
 
             // markers can only be keyboard focusable when they have click listeners
             // open info window when marker is clicked
-            marker.addListener('click', () => {
-                const contentString =
-          '<div id="content" style="width: 300px;margin-right: 10px;margin-bottom: 15px;">' +
-          '<div id="siteNotice">' +
-          '</div>' +
-          '<h1 id="firstHeading" class="firstHeading">' +
-          miner.name +
-          '</h1>' +
-          '<div id="bodyContent">' +
-          '<p>' +
-          miner.address +
-          '</p>' +
-          '</div>' +
-          '</div>'
-                infowindow.setContent(contentString)
-                infowindow.open(map, marker)
-            })
+            // marker.addListener('click', () => {
+            //     const contentString =
+            // '<div id="content" style="width: 300px;margin-right: 10px;margin-bottom: 15px;">' +
+            // '<div id="siteNotice">' +
+            // '</div>' +
+            // '<h1 id="firstHeading" class="firstHeading">' +
+            // miner.name +
+            // '</h1>' +
+            // '<div id="bodyContent">' +
+            // '<p>' +
+            // miner.address +
+            // '</p>' +
+            // '</div>' +
+            // '</div>'
+            //     infowindow.setContent(contentString)
+            //     infowindow.open(map, marker)
+            // })
 
             return marker
         })
@@ -172,7 +182,7 @@ const App = () => {
 
     //Create a button and function to locate the current location on the map
     const createMyLocationButton = ({ map, maps }) => {
-    //Create my location button
+        //Create my location button
         const locButton = document.createElement('button')
         locButton.classList.add('custom-map-control-button')
         const locButton1 = document.createElement('div')
@@ -209,7 +219,7 @@ const App = () => {
     }
 
     useEffect(() => {
-    // fetchMapMarkers();
+        // fetchMapMarkers();
         ChartTotal({}).then((res) => {
             const { code } = res
             const data = res?.data ?? {}
@@ -241,7 +251,7 @@ const App = () => {
                                 color: '#eeeeeee6',
                             }}
                         >
-              Total Miners
+                            Total Miners
                         </div>{' '}
                         <div
                             style={{
