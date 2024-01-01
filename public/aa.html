@@ -1,0 +1,51 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" charset="GB2312"/>
+
+    <script type="text/javascript">
+        function javacalljs(){
+            document.getElementById("showmsg").innerHTML = "9999JAVA调用了JS的无参函数";
+        }
+
+
+
+
+        function transmitTokenToJs(arg){
+            document.getElementById("showmsg").innerHTML = "获取token："+arg;
+        }
+
+    </script>
+
+</head>
+
+<body>
+<h3>Web模块</h3>
+
+<h3 id="showmsg">调用js显示结果</h3>
+
+<input type="button" value="返回app(Android)" onclick="window.android.backPage()"/>
+<p>------------</p>
+<input type="button" value="更新token(Android)" onclick="window.android.updateToken()"/>
+<input type="button" value="gotoChristmas(Android)" onclick="window.android.gotoChristmas()"/>
+<p>------------</p>
+<input type="button" value="返回app(IOS)" onclick="window.webkit.messageHandlers.backPage.postMessage(null)"/>
+<p>------------</p>
+<input type="button" value="更新token(IOS)" onclick="window.webkit.messageHandlers.updateToken.postMessage(null)"/>
+<input type="button" value="gotoChristmas(IOS)" onclick="window.webkit.messageHandlers.gotoChristmas.postMessage(null)"/>
+<a href="https://cockpit.metablox.io/bb.html">goto bb</a>
+
+
+
+<!--<div>jsCallAndroid</div>-->
+<!--<input type="button" value="Js调用Java代码" onclick="window.android.jsCallAndroid()"/>-->
+
+<!--<div>jsCallAndroidArgs</div>-->
+<!--<input type="button" value="Js调用Java代码并传参数" onclick="window.android.jsCallAndroidArgs('Js传过来的参数')"/>-->
+
+<!--<div>IOS-jsCallAndroid</div>-->
+<!--<input type="button" value="Js调用IOS代码" onclick="window.webkit.messageHandlers.jsCallAndroid.postMessage(null)"/>-->
+
+<!--<div>IOS-jsCallAndroidArgs</div>-->
+<!--<input type="button" value="Js调用IOS代码并传参数" onclick="window.webkit.messageHandlers.jsCallAndroidArgs.postMessage('iiiios')"/>-->
+</body>
+</html>
