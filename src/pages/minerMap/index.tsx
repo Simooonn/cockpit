@@ -7,6 +7,7 @@ import { MarkerClusterer } from '@googlemaps/markerclusterer'
 import { Cluster } from '@googlemaps/markerclusterer/dist/cluster'
 import { ClusterStats } from '@googlemaps/markerclusterer/dist/renderer'
 import { ChartTotal, minerMapView } from '@/request/api'
+
 const initMinerMapData = (data: any) => {
     if (!data) {
         return []
@@ -90,7 +91,7 @@ const App = () => {
         })
         // 创建自定义标记的图标
         const icon = {
-            url: '/wifi-location.png',
+            url: '/wifi-location1.png',
             // scaledSize: maps.Size('2.4px', '3.5px')
         }
         // Add some markers to the map.
