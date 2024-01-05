@@ -19,8 +19,8 @@
                 return false
             }
         }
-        function aaaaaa() {
-            window.webkit?.messageHandlers?.backPage?.postMessage(null)
+        function backApp() {
+            isIOS() ?window.webkit?.messageHandlers?.backPage?.postMessage(null):window.android?.backPage()
         }
 
     </script>
@@ -226,7 +226,7 @@
         </div>
     </section>
 </main>
-<div class="absolute top-[24px] left-[20px] " onclick="aaaaaa">
+<div class="absolute top-[24px] left-[20px] " onclick="backApp()">
     <div class="flex flex-col justify-center">
         <img class="w-[24px] h-[24px]" src="/images/iconBack.png" alt=""/>
     </div>
