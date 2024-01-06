@@ -94,7 +94,7 @@ function Overview() {
                     },
                     {
                         lineName: 'Remaining mPoints',
-                        totalNum: data?.totalIssuedPointsNum + data?.totalBurnedPointsNum,
+                        totalNum: (data?.totalIssuedPointsNum ?? 0) - Math.abs(data?.totalBurnedPointsNum ?? 0),
                     },
                     {
                         lineName: 'Burned mPoints',
