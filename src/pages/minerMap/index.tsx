@@ -11,7 +11,7 @@ const App = () => {
             'elementType': 'geometry',
             'stylers': [
                 {
-                    'color': '#212121'
+                    'color': '#000000'
                 }
             ]
         },
@@ -84,7 +84,7 @@ const App = () => {
                 // lng: place?.longitude,
                 lat: place?.lat,
                 lng: place?.lng,
-                weight: 1,
+                weight: 10,
             }
         }
 
