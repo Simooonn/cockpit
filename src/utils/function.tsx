@@ -164,7 +164,7 @@ function md5(value: any) {
 const localStorageKey = 'localStorageData'
 
 /* set localStorage */
-function setLocal(key = '', value: any) {
+export function setLocal(key = '', value: any) {
     const vv: any = {}
     vv[localStorageKey] = typeof value === 'undefined' ? 'undefined' : value
     key = md5(key)
